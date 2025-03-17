@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 指定文档字符编码为 UTF-8，确保正确显示多语言字符 -->
     <meta charset="UTF-8">
+    <!-- 设置视口，使页面在不同设备上响应式显示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 网页标题 -->
     <title>Fullscreen Leaflet Map</title>
+
+    <!-- 外部CSS样式文件，设置页面整体样式 -->
     <link rel="stylesheet" href="./static/css/style.css"/>
+    <!-- 底部弹出层的样式 -->
     <link rel="stylesheet" href="./static/css/bottomPopupDiv.css"/>
+    <!-- 左侧菜单栏的样式 -->
     <link rel="stylesheet" href="./static/css/leftMenu.css"/>
+    <!-- 右侧菜单栏的样式 -->
     <link rel="stylesheet" href="./static/css/rightMenu.css"/>
+    <!-- 地图容器的样式 -->
     <link rel="stylesheet" href="./static/css/map.css"/>
+    <!-- 其他悬浮菜单样式 -->
     <link rel="stylesheet" href="./static/css/spanMenu.css"/>
+    <!-- 地图图例样式 -->
     <link rel="stylesheet" href="./static/css/mapLegend.css"/>
+    <!-- 全屏按钮的样式 -->
     <link rel="stylesheet" href="./static/css/full-screen-button.css"/>
+    <!-- Leaflet 插件 blinkmarker 的样式 -->
     <link rel="stylesheet" href="./static/components/leaflet/blinkmarker.css">
 
+    <!-- Leaflet 地图库的核心CSS -->
     <link rel="stylesheet" href="./static/components/leaflet/leaflet.css"/>
 
+    <!-- 引入 Leaflet 地图库的JavaScript -->
     <script src="./static/components/leaflet/leaflet.js"></script>
+    <!-- Leaflet.canvaslabel 插件，用于在canvas上绘制标签 -->
     <script src="./static/components/leaflet/Leaflet.canvaslabel.js"></script>
+    <!-- jQuery 库 -->
     <script src="./static/components/jquery/jquery.js"></script>
+    <!-- underscore.js 库，为JavaScript提供实用工具函数 -->
     <script src="./static/components/underscore/underscore-min.js"></script>
+    <!-- backbone.js 库，用于构建前端应用的MVC架构 -->
     <script src="./static/components/backbone/backbone-min.js"></script>
+    <!-- Leaflet blinkmarker 插件，用于地图上显示闪烁标记 -->
     <script src="./static/components/leaflet/blinkmarker.js"></script>
 
-
+    <!-- 引入存放城市坐标数据的 JavaScript 文件 -->
     <script src="./data/Coodinates/cities.js" charset="utf-8"></script>
 
+    <!-- Tapeli 相关的CSS文件，可能用于页面某部分的样式（比如按钮、图标等） -->
     <link href="./static/components/tapeli/assets/css/app.css" rel="stylesheet" type="text/css" id="app-style"/>
     <link href="./static/components/tapeli/assets/css/icons.min.css" rel="stylesheet" type="text/css"/>
 
+    <!-- 内嵌CSS样式 -->
     <style>
+        /* 定义一个容器，使其100%宽度和高度，并允许水平滚动 */
         .container {
             width: 100%;
             height: 100%;
@@ -38,18 +61,21 @@
             white-space: nowrap; /* 保持表格不换行 */
         }
 
+        /* 表格样式：自适应宽度且单元格紧密排列 */
         table {
             border-collapse: collapse;
             width: auto; /* 表格宽度自动，可以根据内容扩展 */
             height: 100%; /* 表格高度100% */
         }
 
+        /* 表头和单元格的基本样式：边框、内边距及文本对齐 */
         th, td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
         }
 
+        /* 表头背景色，区别于其他单元格 */
         thead {
             background-color: #f2f2f2;
         }
@@ -58,21 +84,26 @@
 <body>
 
 <!-- 顶部查询框 START -->
-<div class="input-group" style="position: fixed; margin-top: 20px;margin-left:78%;z-index: 99999;width: 20%">
-    <input type="text" class="form-control" id="search_input"
-           aria-label="Text input with dropdown button">
-    <button class="btn btn-primary dropdown-toggle" type="button"
-            aria-expanded="false">查询
+<!-- 固定定位的输入组，位于页面右上角（靠近顶部和右边），用于输入查询内容 -->
+<div class="input-group" style="position: fixed; margin-top: 20px; margin-left:78%; z-index: 99999; width: 20%">
+    <!-- 文本输入框，用于用户输入搜索或查询关键词 -->
+    <input type="text" class="form-control" id="search_input" aria-label="Text input with dropdown button">
+    <!-- 查询按钮，触发查询功能 -->
+    <button class="btn btn-primary dropdown-toggle" type="button" aria-expanded="false">查询
     </button>
 </div>
+<!-- 顶部查询框 END -->
 
 <!-- 左侧菜单栏 START -->
+<!-- 左侧菜单容器，可能包含多个功能项或导航项 -->
 <div class="x-left-menu" id="x-left-menu">
 </div>
 <!-- 左侧菜单栏 END -->
 
 <!-- 右侧菜单栏 START -->
+<!-- 右侧菜单容器，用于放置多种功能按钮 -->
 <div class="right-menu" id="right-menu">
+    <!-- 单点模式按钮，点击后可能弹出一个侧边栏（offcanvas），用于单个点的操作 -->
     <a href="#" class="card-r" type="button" data-bs-toggle="offcanvas"
        data-bs-target="#offcanvasScrolling1" aria-controls="offcanvasScrolling" id="singleMode">
         <div class="card-r-content">
@@ -80,21 +111,25 @@
         </div>
     </a>
 
+    <!-- 多点模式按钮，可能用于同时选择多个点 -->
     <a href="#" class="card-r" id="multiMode">
         <div class="card-r-content">
             <div class="text">多点模式</div>
         </div>
     </a>
 
+    <!-- 航线规划按钮，可能用于规划路线或航线 -->
     <a href="#" class="card-r">
         <div class="card-r-content">
             <div class="text">航线规划</div>
         </div>
     </a>
 
+    <!-- AI按钮，点击后触发一个模态框（modal），用于展示或交互与AI相关的功能 -->
     <a type="button" data-bs-toggle="modal" data-bs-target="#standard-modal" class="card-r" id="ai_popup">
         <div class="card-r-content">
             <div class="text">AI</div>
+            <!-- AI图标的动态效果，利用多个 span 元素和 CSS 动画（不同延迟）实现动画效果 -->
             <div class="ai-cartoon">
                 <span class="ai-cartoon-item" style="--delay:-0.6s"></span>
                 <span class="ai-cartoon-item" style="--delay:-0.4s"></span>
@@ -106,6 +141,7 @@
         </div>
     </a>
 
+    <!-- 完成航线按钮，点击后可能弹出侧边栏显示已完成的航线 -->
     <a href="#" class="card-r" id="connectMarkersButton" type="button" data-bs-toggle="offcanvas"
        data-bs-target="#offcanvasScrolling3" aria-controls="offcanvasScrolling">
         <div class="card-r-content">
@@ -113,6 +149,7 @@
         </div>
     </a>
 
+    <!-- 清空地图按钮，用于移除地图上添加的所有标记或绘制内容 -->
     <a href="#" class="card-r" id="removeMarkersButton">
         <div class="card-r-content">
             <div class="text">清空地图</div>
@@ -123,6 +160,7 @@
 <!-- 右侧菜单栏 END -->
 
 <!-- 地图 START -->
+<!-- 地图容器，通过 Leaflet 库初始化地图，使用特定的CSS类控制样式 -->
 <div id="map" class="map-container"></div>
 <!-- 地图 END -->
 
@@ -133,26 +171,27 @@
         <!-- 这里通过JS动态添加 -->
     </div>
     <!-- SPAN方块 END -->
+
     <!-- 信息选择框 START -->
     <div class="input-card">
-        <!-- 播放暂停按钮 START -->
+        <!-- 播放暂停按钮区域 START -->
         <div class="buttons">
-            <!-- 播放暂停按钮 START -->
+            <!-- 后退按钮：点击后可能触发上一帧或上一步的操作 -->
             <a href="#" class="play_stop_button" id="back_button">
                 <img src="./static/img/icon/back_arrow.svg" alt="SVG Image" width="50%" height="50%">
             </a>
+
+            <!-- 播放/暂停按钮：通过修改背景色及图片来体现当前状态 -->
             <a href="#" class="play_stop_button" id="play_stop_button" style="background-color: rgba(224, 62, 54, 1)">
-                <img id="play_stop_button_img" src="./static/img/icon/run.svg" alt="SVG Image" width="60%"
-                     height="60%">
+                <img id="play_stop_button_img" src="./static/img/icon/run.svg" alt="SVG Image" width="60%" height="60%">
             </a>
+
+            <!-- 前进按钮：点击后可能触发下一帧或下一步的操作 -->
             <a href="#" class="play_stop_button" id="forward_button">
                 <img src="./static/img/icon/forward_arrow.svg" alt="SVG Image" width="50%" height="50%">
             </a>
-
-            <!-- 播放暂停按钮 END -->
-
         </div>
-        <!-- 播放暂停按钮 END -->
+        <!-- 播放暂停按钮区域 END -->
     </div>
     <!-- 信息选择框 END -->
 </nav>
@@ -164,11 +203,12 @@
 </div>
 <!-- 色卡 END -->
 
+<!-- 全屏按钮 START -->
 <a class="full-screen-button" id="full-screen-button">
     <img class="full-screen-button_img" id="full-screen-button_img" src="./static/img/icon/fullscreen.svg"
          alt="SVG Image">
 </a>
-
+<!-- 全屏按钮 END -->
 
 <!-- 底部弹出框 START -->
 <div id="bottomPopupDiv">一个弹出的DIV，用于展示某一点信息详情
@@ -283,22 +323,35 @@
 <!-- 底部弹出框 END -->
 
 <!-- AI弹出框 START -->
+<!-- 定义一个模态框，用于显示AI助手相关信息，使用Bootstrap的模态框组件 -->
 <div class="modal fade" id="standard-modal" tabindex="-1" aria-labelledby="standard-modalLabel" aria-hidden="true">
+    <!-- 模态框对话框容器 -->
     <div class="modal-dialog">
+        <!-- 模态框内容区域 -->
         <div class="modal-content">
+            <!-- 模态框头部 -->
             <div class="modal-header">
+                <!-- 模态框标题，显示“AI助手” -->
                 <h1 class="modal-title fs-5" id="standard-modalLabel">AI助手</h1>
+                <!-- 关闭按钮，点击后关闭模态框。data-bs-dismiss="modal"属性使其与Bootstrap模态框组件联动 -->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- 模态框主体 -->
             <div class="modal-body"
                  style="display: flex;flex-direction: column; /* 如果需要垂直排列，可以添加这个属性 */ ">
+                <!-- 第一个Toast组件，用于展示一段信息（例如天气详情） -->
                 <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <!-- Toast头部，包含图标、标题和时间 -->
                     <div class="toast-header">
+                        <!-- 小图标，通常用于标识消息来源 -->
                         <img src="./static/components/tapeli/assets/images/logo-sm.png" class="rounded me-2" height="16"
                              alt="toast header"/>
+                        <!-- 标题 -->
                         <strong class="me-auto">AI助理</strong>
+                        <!-- 显示信息发布时间（例如“11 分钟之前”） -->
                         <small>11 分钟之前</small>
                     </div>
+                    <!-- Toast主体，展示具体的信息内容 -->
                     <div class="toast-body">
                         早上好，今天是2024年10月17日，在深圳市南山区大学城，天气情况如下：
                         温度：白天最高气温约为29℃，夜间最低气温将降至22℃左右。
@@ -310,33 +363,45 @@
                     </div>
                 </div>
 
+                <!-- 第二个Toast组件，背景色为蓝色（bg-primary）且文字为白色，通常用于突出重要提示 -->
                 <div class="toast fade show bg-primary text-white" role="alert" aria-live="assertive" aria-atomic="true"
                      style="align-self: flex-end;margin-top: 20px">
+                    <!-- Toast主体 -->
                     <div class="toast-body">
                         这里未来2小时内气温变化情况
                     </div>
                 </div>
 
+                <!-- 第三个Toast组件，展示当前时刻的信息及未来6小时内气温变化情况 -->
                 <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true"
                      style="margin-top: 20px">
+                    <!-- Toast头部 -->
                     <div class="toast-header">
+                        <!-- 小图标 -->
                         <img src="./static/components/tapeli/assets/images/logo-sm.png" class="rounded me-2" height="16"
                              alt="toast header"/>
+                        <!-- 标题 -->
                         <strong class="me-auto">AI助理</strong>
+                        <!-- 时间标记，显示为“现在” -->
                         <small>现在</small>
                     </div>
+                    <!-- Toast主体 -->
                     <div class="toast-body">
                         这里未来6小时内气温变化情况如下
+                        <!-- 插入一张图片，展示气温变化的图表或示意图 -->
                         <img src="./static/img/weather.png" style="width: 90%;padding: 5px">
                     </div>
                 </div>
 
             </div>
+            <!-- 模态框底部 -->
             <div class="modal-footer">
-
+                <!-- 输入区域，用于用户输入对话内容或发送指令 -->
                 <div class="input-group">
+                    <!-- 输入框，用户可在此输入文字 -->
                     <input type="text" class="form-control" id="example-custom"
                            aria-label="Text input with dropdown button">
+                    <!-- 发送按钮，用于提交输入的内容 -->
                     <button class="btn btn-primary dropdown-toggle" type="button"
                             aria-expanded="false">发送
                     </button>
@@ -350,10 +415,12 @@
 <!-- 单点模式弹出框 START -->
 <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
      id="offcanvasScrolling1" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框的头部，包含标题“详情数据”和关闭按钮 -->
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasScrollingLabel1" style="padding-left: 1.2rem ">详情数据</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <!-- 弹出框的主体内容 -->
     <div class="offcanvas-body">
         <div class="row" style="--bs-gutter-x: 0px; ">
             <div class="col-12">
@@ -361,6 +428,7 @@
 
                     <div class="card-body">
 
+                        <!-- 地点信息 -->
                         <div class="align-items-center">
                             <div class="d-flex align-items-center">
 
@@ -376,6 +444,7 @@
                             </div>
                         </div>
 
+                        !-- 导航栏，用于切换不同的数据类型（基础信息、雷达、卫星、探空） -->
                         <ul class="nav nav-underline border-bottom pt-2" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active p-2" id="profile_about_tab" data-bs-toggle="tab"
@@ -407,6 +476,7 @@
                             </li>
                         </ul>
 
+                        <!-- 选项卡内容 -->
                         <div class="tab-content text-muted bg-white">
                             <div class="tab-pane active show pt-4" id="profile_about" role="tabpanel">
                                 <h6 class="text-uppercase fs-13">实况信息</h6>
@@ -415,6 +485,7 @@
                                         <div class="">
                                             <div class="justify-content-center mb-4">
                                                 <div class="row" style="--bs-gutter-x: 0px; ">
+                                                    <!-- 温度信息 -->
                                                     <div class="col-md-6 col-xl-3">
                                                         <a href="#">
                                                             <div class="px-2 py-3 text-center">
@@ -427,6 +498,7 @@
                                                             </div>
                                                         </a>
                                                     </div>
+                                                    <!-- 湿度信息 -->
                                                     <div class="col-md-6 col-xl-3">
                                                         <a href="#">
                                                             <div class="px-2 py-3 text-center">
@@ -439,6 +511,7 @@
                                                             </div>
                                                         </a>
                                                     </div>
+                                                    <!-- 降水信息 -->
                                                     <div class="col-md-6 col-xl-3">
                                                         <a href="#">
                                                             <div class="px-2 py-3 text-center">
@@ -450,6 +523,7 @@
                                                             </div>
                                                         </a>
                                                     </div>
+                                                    <!-- 风力信息 -->
                                                     <div class="col-md-6 col-xl-3">
                                                         <a href="#">
                                                             <div class="px-2 py-3 text-center">
@@ -463,6 +537,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- 数据图表区域 -->
                                             <div id="linecolumn_area_chart" class="apex-charts"></div>
                                             <div id="datalabel_line_chart" class="apex-charts"></div>
                                             <div id="gradient_line_chart" class="apex-charts"></div>
@@ -825,10 +900,12 @@
 <!-- 多点模式弹出框 START -->
 <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
      id="offcanvasScrolling2" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框的头部，包含标题和关闭按钮 -->
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasScrollingLabel2">航线规划</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <!-- 弹出框的主体内容区域 -->
     <div class="offcanvas-body">
         <p>航线规划的内容</p>
     </div>
@@ -838,10 +915,12 @@
 <!-- 航线规划的弹出框 START -->
 <div class="offcanvas offcanvas-bottom" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
      id="offcanvasScrolling3" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框头部，包含标题和关闭按钮，去除了顶部和底部的内边距 -->
     <div class="offcanvas-header" style="padding-top: 0px;padding-bottom: 0px">
         <h5 class="offcanvas-title" id="offcanvasScrollingLabel3">航线规划</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <!-- 弹出框的主体内容，包含 ApexCharts 图表容器 -->
     <div class="offcanvas-body">
         <div id="annotations_line_chart" class="apex-charts"></div>
     </div>
@@ -849,39 +928,37 @@
 <!-- 航线规划的弹出框 END -->
 
 
+<!-- 配置文件 -->
 <script src="./static/js/config.js"></script>
 
 
 <!-- JS 关键依赖：风场粒子和强度图-->
-<script src="./static/components/leaflet/leaflet-velocity.js"></script>
-<script src="./static/components/leaflet/leaflet-vector-scalar.js"></script>
+<script src="./static/components/leaflet/leaflet-velocity.js"></script> <!-- 处理风场粒子动画 -->
+<script src="./static/components/leaflet/leaflet-vector-scalar.js"></script> <!-- 处理风场矢量数据 -->
 
 <!-- JS 地图逻辑 周奇凤PART-->
-<script src="static/js/map.js"></script>
-<script src="./static/js/rightMenu.js"></script>
-<script src="./static/js/init.js"></script>
+<script src="static/js/map.js"></script> <!-- 处理地图交互 -->
+<script src="./static/js/rightMenu.js"></script> <!-- 右键菜单功能 -->
+<script src="./static/js/init.js"></script> <!-- 页面初始化 -->
 
 <!-- JS 底部弹出信息 梁嘉俊PART-->
 <script src="static/js/bottomPopupDiv.js"></script>
 
-<script src="./static/components/tapeli/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="./static/components/tapeli/assets/js/app.js"></script>
+<script src="./static/components/tapeli/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 组件支持 -->
+<script src="./static/components/tapeli/assets/js/app.js"></script> <!-- 主要的应用逻辑 -->
 
 <!-- Apexcharts JS -->
-<script src="./static/components/tapeli/assets/libs/apexcharts/apexcharts.min.js"></script>
+<script src="./static/components/tapeli/assets/libs/apexcharts/apexcharts.min.js"></script> <!-- 引入 ApexCharts -->
 
 <!-- for basic area chart -->
-<script src="data/Coodinates/stock-prices.js"></script>
+<script src="data/Coodinates/stock-prices.js"></script> <!-- 可能用于图表的数据 -->
 
 <!-- Boxplot Charts Init Js -->
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-heatmap.init.js"></script>
-<!-- Apexcharts Init Js -->
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-line.init.js"></script>
-
-
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-mixed.init.js"></script>
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-heatmap.init.js"></script> <!-- 热力图初始化 -->
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-line.init.js"></script> <!-- 折线图初始化 -->
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-mixed.init.js"></script> <!-- 混合图初始化 -->
 
 <!-- Widgets Init Js -->
-<script src="./static/components/tapeli/assets/js/pages/widgets.init.js"></script>
+<script src="./static/components/tapeli/assets/js/pages/widgets.init.js"></script> <!-- 处理小部件（如统计信息） -->
 </body>
 </html>
