@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet-src.js"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .map {
+            width: 100%;
+            height: 600px;
+        }
+
+        .header {
+            padding-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Leaflet.CanvasLabel</h1>
+        <p>Leaflet插件,用于显示矢量文本标注</p>
+    </div>
+    <div class="map" id="map"></div>
+</div>
+
+<script src="./static/components/leaflet/Leaflet.canvaslabel.js"></script>
+<script src="./data/Coodinates/cities.js" charset="utf-8"></script>
+<script>
+    //矢量文本标签渲染器
+    var canvasLabel = new L.CanvasLabel({
+        defaultLabelStyle: {
+            collisionFlg: true,
+            scale: 1,
+            strokeStyle: "#000",
+            fillStyle: "#fff",
+            lineWidth: 3
+        }
+
+    });
+
+    //定义地图
+    var map = L.map('map', {
+        renderer: canvasLabel
+    }).setView([35.695786, 139.749213], 8);
+
+    //添加OpenStreetMap底图
+    var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        preferCanvas: true
+    }).addTo(map);
+
+    //添加矢量数据
+    var p = L.polyline(
+        [[[35.695786, 139.749213],
+            [35.695786, 139.748213]]], {
+
+            labelStyle: {
+                text: 'Leaflet.LabelTextCollision!!!!!!!!',
+                zIndex: 0,
+                collisionFlg: false,
+                zIndex: 0,
+                textAlign: 'right'
+            },
+            color: '#fe57a1',
+        }).addTo(map);
+
+
+    for (let i = 0; i < 1000; i++) {
+        let latlng = L.latLng(35.695786 + Math.random() * 1.8, 139.749213 + Math.random() * 3.6);
+        let c = L.circleMarker(latlng, {
+            radius: 5,
+            labelStyle: {
+                text: "22222",
+                rotation: 0,
+                zIndex: i
+            }
+        }).addTo(map);
+    }
+
+    for (let city in cityCoordinates) {
+        if (cityCoordinates.hasOwnProperty(city)) { // 确保是对象自身的属性
+            let coordinates = cityCoordinates[city];
+            let latlng = L.latLng(coordinates[1],coordinates[0]);
+            let c = L.circleMarker(latlng, {
+                radius: 5,
+                labelStyle: {
+                    text: city,
+                    rotation: 0,
+                    zIndex: 1
+                }
+            }).addTo(map);
+            console.log(city,coordinates)
+        }
+    }
+</script>
+</body>
+
+</html>

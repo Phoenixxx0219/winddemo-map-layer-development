@@ -1,0 +1,154 @@
+.spans-menu {
+    z-index: 999;
+    position: fixed;
+    height: 28px;
+    bottom: 10px; /* 距离窗口底部0像素 */
+    right: 10px; /* 距离窗口右侧20像素 */
+    padding: 10px; /* div的内边距 */
+    background: rgba(255, 255, 255, .4);
+    display: flex;
+    align-items: flex-end; /* 使子元素底部对齐 */
+    border-radius: 0px;
+}
+
+.span__item {
+    width: 0.9rem;
+    height: 1.6rem;
+    /*background-color: rgba(22, 49, 114,0.8);*/
+    background-color: var(--accent-rgba);
+    box-shadow: 1px 1px 10px rgba(122, 122, 122, 0.5);
+    color: #ffffff; /* 设置链接文字颜色为白色 */
+    font-size: 12px; /* 设置链接文字大小为18像素 */
+    display: inline-block;
+    margin-left: 0.3rem;
+    animation-name: span_close;
+    animation-duration: 0s;
+    will-change: width background-color;
+    transition: background 0.55s;
+    vertical-align: bottom;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.span__item p {
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; /* 过渡效果持续1秒 */
+}
+
+.p-text-show {
+    opacity: 1 !important;
+}
+
+
+.play_stop_button {
+    width: 1.6rem;
+    height: 1.6rem;
+    background: var(--default-rgba);
+    color: #ffffff; /* 设置链接文字颜色为白色 */
+    display: inline-block;
+    margin-left: 0.3rem;
+    animation-name: span_close;
+    animation-duration: 0s;
+    will-change: width background-color;
+    transition: background 0.55s;
+    vertical-align: bottom;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time_button {
+    width: 3.2rem;
+    height: 1.6rem;
+    background: var(--default-rgba);
+    color: #ffffff; /* 设置链接文字颜色为白色 */
+    margin-left: 0.3rem;
+    animation-name: span_close;
+    animation-duration: 0s;
+    will-change: width background-color;
+    transition: background 0.55s;
+    vertical-align: bottom;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none; /* 或者设置相同的边框 */
+    box-sizing: border-box; /* 确保元素的总高度包括边框和内边距 */
+    font-size: 10px;
+}
+
+.input-card {
+    display: flex;
+}
+
+.time_button {
+    width: 3.2rem;
+    height: 1.6rem;
+    background: var(--default-rgba);
+    color: #ffffff; /* 设置链接文字颜色为白色 */
+    margin-left: 0.3rem;
+    animation-name: span_close;
+    animation-duration: 0s;
+    will-change: width background-color;
+    transition: background 0.55s;
+    vertical-align: bottom;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none; /* 或者设置相同的边框 */
+    box-sizing: border-box; /* 确保元素的总高度包括边框和内边距 */
+}
+
+.span__item:first-child {
+    margin-left: 0;
+}
+
+.span__item--animate {
+    animation-duration: 2s;
+}
+
+.span__item--active {
+    width: 6rem;
+    height: 1.6rem;
+    animation-name: span_open;
+}
+
+@keyframes span_open {
+    0% {
+        width: 0.9rem;
+        height: 1.6rem;
+    }
+    40% {
+        width: 6.1rem;
+        height: 1.6rem;
+    }
+    60% {
+        width: 6rem;
+        height: 1.6rem;
+    }
+    100% {
+        width: 6rem;
+        height: 1.6rem;
+    }
+}
+
+@keyframes span_close {
+    0% {
+        width: 6rem;
+        height: 1.6rem;
+    }
+    40% {
+        width: 0.8rem;
+        height: 1.6rem;
+    }
+    60% {
+        width: 0.9rem;
+        height: 1.6rem;
+    }
+    100% {
+        width: 0.9rem;
+        height: 1.6rem;
+    }
+}

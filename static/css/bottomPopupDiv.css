@@ -1,0 +1,16 @@
+/*下方弹出，占总页面30%*/
+#bottomPopupDiv {
+    position: fixed;
+    bottom: -30%; /* 初始位置在屏幕下方 */
+    left: 0;
+    width: 100%;
+    height: 30%; /* 占满下半部分屏幕 */
+    background-color: white;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+    transition: bottom 0.2s ease; /* 平滑过渡效果 */
+    z-index: 999999; /* 确保弹出层在按钮之下，但其他内容之上 */
+}
+
+body.bottom-popup-active #bottomPopupDiv {
+    bottom: 0; /* 弹出时位置 */
+}

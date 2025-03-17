@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.map-legend {
+    position: absolute;
+    bottom: 60px;   /* 在SPAN方块的上面 */
+    right: 20px;    /* 屏幕右下角 */
+    z-index: 99999;
+}
+
+.legend-bg {
+    transition: all .3s;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    width: 400px;
+    margin-left: 20px;
+    box-shadow: 0px 2px 4px #2f332a;
+    padding: 0 5px;
+}
+
+.value-label {
+    text-align: center;
+    font-size: 14px;
+    color: #FFFFFF;
+    flex: 1;
+}

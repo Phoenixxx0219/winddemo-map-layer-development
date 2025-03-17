@@ -1,0 +1,14 @@
+/*去掉leaflet右下角版权标志*/
+.leaflet-control-attribution {
+    display: none;
+}
+
+#map {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.map-container {
+    background-color: rgba(0, 0, 0, 0.6);
+}
