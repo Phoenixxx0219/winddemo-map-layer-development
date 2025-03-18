@@ -5,8 +5,8 @@ body {
 
 .map-legend {
     position: absolute;
-    bottom: 60px;   /* 在SPAN方块的上面 */
-    right: 20px;    /* 屏幕右下角 */
+    bottom: 30px;   /* 在SPAN方块的上面 */
+    left: 10px;    /* 屏幕右下角 */
     z-index: 99999;
 }
 
