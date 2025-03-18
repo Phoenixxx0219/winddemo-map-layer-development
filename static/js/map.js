@@ -12,104 +12,124 @@ var canvasLabel = new L.CanvasLabel({
 });
 
 // 初始化地图
-var map = L.map('map', {
-    zoomControl: false, // 禁用缩放按钮
-    renderer: canvasLabel
-}).setView([28.125178, 113.280637,], 7); // 设置中心点和缩放级别
+// var map = L.map('map', {
+//     zoomControl: false, // 禁用缩放按钮
+//     renderer: canvasLabel
+// }).setView([28.125178, 113.280637,], 7); // 设置中心点和缩放级别
 
+// 初始化地图
+var map = L.map("map").setView(TILE_MAP.mapCenter, TILE_MAP.zoom);
 
 // 设置地图的最小和最大缩放级别
 map.setMinZoom(5); // 最小缩放级别为5
 map.setMaxZoom(14); // 最大缩放级别为14
 
-map.createPane('scalarPane');
-map.getPane('scalarPane').style.zIndex = 9; // 标量场放在最下面
-
-map.createPane('tilePane');
-map.getPane('tilePane').style.zIndex = 99; // 地图瓦片放在中间
-
-map.createPane('velocityPane');
-map.getPane('velocityPane').style.zIndex = 999; // 粒子场放在标量场上面
-
-map.createPane('textPane');
-map.getPane('textPane').style.zIndex = 99999; // 粒子场放在标量场上面
-
-// 瓦片图层
-// var tilelayer = L.tileLayer(TILE, {
-//     minZoom: 0,
-//     maxzoom: 11,
-//     zIndex: 999
-// }).addTo(map, {pane: 'tilePane'});
-
-// 创建自定义瓦片图层类
-var WindTileLayer = L.TileLayer.extend({
-    getTileUrl: function (coords) {
-        return TILE_wind.replace('{z}', coords.z).replace('{x}', coords.x).replace('{y}', coords.y);
+var tiandituBase = L.tileLayer(
+    TILE_MAP.tileUrlBase + TILE_MAP.tiandituKey,
+    {
+        subdomains: ["0", "1", "2", "3", "4", "5", "6", "7"],
+        attribution: '&copy; <a href="https://www.tianditu.gov.cn/">天地图</a>',
+        maxZoom: 18
     }
-});
+).addTo(map);
 
-var StandardTileLayer = L.TileLayer.extend({
-    getTileUrl: function (coords) {
-        return TILE_Standard.replace('{z}', coords.z).replace('{x}', coords.x).replace('{y}', coords.y);
+// 同理添加标注层
+var tiandituLabel = L.tileLayer(
+    TILE_MAP.tileUrlLabel + TILE_MAP.tiandituKey,
+    {
+        subdomains: ["0", "1", "2", "3", "4", "5", "6", "7"],
+        maxZoom: 18
     }
-});
+).addTo(map);
 
-// 创建新的层（pane）用于放置瓦片图层
-map.createPane('windPane');
-map.createPane('standardPane');
+// map.createPane('scalarPane');
+// map.getPane('scalarPane').style.zIndex = 9; // 标量场放在最下面
 
-// 确保新创建的层位于默认的图层之上
-map.getPane('windPane').style.zIndex = 650;
-map.getPane('standardPane').style.zIndex = 651;
+// map.createPane('tilePane');
+// map.getPane('tilePane').style.zIndex = 99; // 地图瓦片放在中间
 
-// 创建瓦片图层实例
-var windLayer = new WindTileLayer();
-var standardLayer = new StandardTileLayer();
+// map.createPane('velocityPane');
+// map.getPane('velocityPane').style.zIndex = 999; // 粒子场放在标量场上面
 
-// 将瓦片图层添加到相应的层（pane）中
-windLayer.addTo(map, {pane: 'windPane'});
-standardLayer.addTo(map, {pane: 'standardPane'});
+// map.createPane('textPane');
+// map.getPane('textPane').style.zIndex = 99999; // 粒子场放在标量场上面
 
-// 初始状态下，根据缩放级别显示或隐藏瓦片图层
-function updateTileLayerVisibility() {
-    var zoom = map.getZoom();
-    if (zoom <= 11) {
-        windLayer.addTo(map); // 如果还没有添加到地图，则添加
-        standardLayer.removeFrom(map); // 从地图中移除
-        console.log('显示windy')
-    } else {
-        windLayer.removeFrom(map); // 从地图中移除
-        standardLayer.addTo(map); // 如果还没有添加到地图，则添加
-        console.log('显示gaode')
-    }
-}
+// // 瓦片图层
+// // var tilelayer = L.tileLayer(TILE, {
+// //     minZoom: 0,
+// //     maxzoom: 11,
+// //     zIndex: 999
+// // }).addTo(map, {pane: 'tilePane'});
 
-// 调用函数以设置初始的瓦片图层可见性
-updateTileLayerVisibility();
+// // 创建自定义瓦片图层类
+// var WindTileLayer = L.TileLayer.extend({
+//     getTileUrl: function (coords) {
+//         return TILE_wind.replace('{z}', coords.z).replace('{x}', coords.x).replace('{y}', coords.y);
+//     }
+// });
 
-// 监听地图的缩放结束事件，并根据缩放级别更新瓦片图层的可见性
-map.on('zoomend', function () {
-    // 使用setTimeout来确保在缩放级别更新后执行
-    setTimeout(updateTileLayerVisibility, 0);
-});
+// var StandardTileLayer = L.TileLayer.extend({
+//     getTileUrl: function (coords) {
+//         return TILE_Standard.replace('{z}', coords.z).replace('{x}', coords.x).replace('{y}', coords.y);
+//     }
+// });
+
+// // 创建新的层（pane）用于放置瓦片图层
+// map.createPane('windPane');
+// map.createPane('standardPane');
+
+// // 确保新创建的层位于默认的图层之上
+// map.getPane('windPane').style.zIndex = 650;
+// map.getPane('standardPane').style.zIndex = 651;
+
+// // 创建瓦片图层实例
+// var windLayer = new WindTileLayer();
+// var standardLayer = new StandardTileLayer();
+
+// // 将瓦片图层添加到相应的层（pane）中
+// windLayer.addTo(map, {pane: 'windPane'});
+// standardLayer.addTo(map, {pane: 'standardPane'});
+
+// // 初始状态下，根据缩放级别显示或隐藏瓦片图层
+// function updateTileLayerVisibility() {
+//     var zoom = map.getZoom();
+//     if (zoom <= 11) {
+//         windLayer.addTo(map); // 如果还没有添加到地图，则添加
+//         standardLayer.removeFrom(map); // 从地图中移除
+//         console.log('显示windy')
+//     } else {
+//         windLayer.removeFrom(map); // 从地图中移除
+//         standardLayer.addTo(map); // 如果还没有添加到地图，则添加
+//         console.log('显示gaode')
+//     }
+// }
+
+// // 调用函数以设置初始的瓦片图层可见性
+// updateTileLayerVisibility();
+
+// // 监听地图的缩放结束事件，并根据缩放级别更新瓦片图层的可见性
+// map.on('zoomend', function () {
+//     // 使用setTimeout来确保在缩放级别更新后执行
+//     setTimeout(updateTileLayerVisibility, 0);
+// });
 
 
-// 文字图层
-for (let city in allcityCoordinates) {
-    if (allcityCoordinates.hasOwnProperty(city)) { // 确保是对象自身的属性
-        let coordinates = allcityCoordinates[city];
-        let latlng = L.latLng(coordinates[1], coordinates[0]);
-        let c = L.circleMarker(latlng, {
-            radius: 0,
-            color: 'rgba(0,0,0,0)',
-            labelStyle: {
-                text: city,
-                rotation: 0,
-            }
-        }).addTo(map, {pane: 'textPane'});
-        console.log(city, coordinates)
-    }
-}
+// // 文字图层
+// for (let city in allcityCoordinates) {
+//     if (allcityCoordinates.hasOwnProperty(city)) { // 确保是对象自身的属性
+//         let coordinates = allcityCoordinates[city];
+//         let latlng = L.latLng(coordinates[1], coordinates[0]);
+//         let c = L.circleMarker(latlng, {
+//             radius: 0,
+//             color: 'rgba(0,0,0,0)',
+//             labelStyle: {
+//                 text: city,
+//                 rotation: 0,
+//             }
+//         }).addTo(map, {pane: 'textPane'});
+//         console.log(city, coordinates)
+//     }
+// }
 
 // 数据源二选一
 // var data = './data/wind/windydata.json';

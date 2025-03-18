@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 指定文档字符编码为 UTF-8，确保正确显示多语言字符 -->
+    <meta charset="UTF-8">
+    <!-- 设置视口，使页面在不同设备上响应式显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 网页标题 -->
+    <title>Fullscreen Leaflet Map</title>
+
+    <!-- 外部CSS样式文件，设置页面整体样式 -->
+    <link rel="stylesheet" href="./static/css/style.css"/>
+    <!-- 底部弹出层的样式 -->
+    <link rel="stylesheet" href="./static/css/bottomPopupDiv.css"/>
+    <!-- 左侧菜单栏的样式 -->
+    <link rel="stylesheet" href="./static/css/leftMenu.css"/>
+    <!-- 右侧菜单栏的样式 -->
+    <link rel="stylesheet" href="./static/css/rightMenu.css"/>
+    <!-- 地图容器的样式 -->
+    <link rel="stylesheet" href="./static/css/map.css"/>
+    <!-- 其他悬浮菜单样式 -->
+    <link rel="stylesheet" href="./static/css/spanMenu.css"/>
+    <!-- 地图图例样式 -->
+    <link rel="stylesheet" href="./static/css/mapLegend.css"/>
+    <!-- 全屏按钮的样式 -->
+    <link rel="stylesheet" href="./static/css/full-screen-button.css"/>
+    <!-- Leaflet 插件 blinkmarker 的样式 -->
+    <link rel="stylesheet" href="./static/components/leaflet/blinkmarker.css">
+
+    <!-- Leaflet 地图库的核心CSS -->
+    <link rel="stylesheet" href="./static/components/leaflet/leaflet.css"/>
+
+    <!-- 引入 Leaflet 地图库的JavaScript -->
+    <script src="./static/components/leaflet/leaflet.js"></script>
+    <!-- Leaflet.canvaslabel 插件，用于在canvas上绘制标签 -->
+    <script src="./static/components/leaflet/Leaflet.canvaslabel.js"></script>
+    <!-- jQuery 库 -->
+    <script src="./static/components/jquery/jquery.js"></script>
+    <!-- underscore.js 库，为JavaScript提供实用工具函数 -->
+    <script src="./static/components/underscore/underscore-min.js"></script>
+    <!-- backbone.js 库，用于构建前端应用的MVC架构 -->
+    <script src="./static/components/backbone/backbone-min.js"></script>
+    <!-- Leaflet blinkmarker 插件，用于地图上显示闪烁标记 -->
+    <script src="./static/components/leaflet/blinkmarker.js"></script>
+
+    <!-- 引入存放城市坐标数据的 JavaScript 文件 -->
+    <script src="./data/Coodinates/cities.js" charset="utf-8"></script>
+
+    <!-- Tapeli 相关的CSS文件，可能用于页面某部分的样式（比如按钮、图标等） -->
+    <link href="./static/components/tapeli/assets/css/app.css" rel="stylesheet" type="text/css" id="app-style"/>
+    <link href="./static/components/tapeli/assets/css/icons.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- 内嵌CSS样式 -->
+    <style>
+        /* 定义一个容器，使其100%宽度和高度，并允许水平滚动 */
+        .container {
+            width: 100%;
+            height: 100%;
+            overflow-x: auto; /* 允许水平滚动条 */
+            overflow-y: hidden; /* 禁止垂直滚动条 */
+            white-space: nowrap; /* 保持表格不换行 */
+        }
+
+        /* 表格样式：自适应宽度且单元格紧密排列 */
+        table {
+            border-collapse: collapse;
+            width: auto; /* 表格宽度自动，可以根据内容扩展 */
+            height: 100%; /* 表格高度100% */
+        }
+
+        /* 表头和单元格的基本样式：边框、内边距及文本对齐 */
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        /* 表头背景色，区别于其他单元格 */
+        thead {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部查询框 START -->
+<!-- 固定定位的输入组，位于页面右上角（靠近顶部和右边），用于输入查询内容 -->
+<div class="input-group" style="position: fixed; margin-top: 20px; margin-left:78%; z-index: 99999; width: 20%">
+    <!-- 文本输入框，用于用户输入搜索或查询关键词 -->
+    <input type="text" class="form-control" id="search_input" aria-label="Text input with dropdown button">
+    <!-- 查询按钮，触发查询功能 -->
+    <button class="btn btn-primary dropdown-toggle" type="button" aria-expanded="false">查询
+    </button>
+</div>
+<!-- 顶部查询框 END -->
+
+<!-- 左侧菜单栏 START -->
+<!-- 左侧菜单容器，可能包含多个功能项或导航项 -->
+<div class="x-left-menu" id="x-left-menu">
+</div>
+<!-- 左侧菜单栏 END -->
+
+<!-- 右侧菜单栏 START -->
+<!-- 右侧菜单容器，用于放置多种功能按钮 -->
+<div class="right-menu" id="right-menu">
+    <!-- 单点模式按钮，点击后可能弹出一个侧边栏（offcanvas），用于单个点的操作 -->
+    <a href="#" class="card-r" type="button" data-bs-toggle="offcanvas"
+       data-bs-target="#offcanvasScrolling1" aria-controls="offcanvasScrolling" id="singleMode">
+        <div class="card-r-content">
+            <div class="text">单点模式</div>
+        </div>
+    </a>
+
+    <!-- 多点模式按钮，可能用于同时选择多个点 -->
+    <a href="#" class="card-r" id="multiMode">
+        <div class="card-r-content">
+            <div class="text">多点模式</div>
+        </div>
+    </a>
+
+    <!-- 航线规划按钮，可能用于规划路线或航线 -->
+    <a href="#" class="card-r">
+        <div class="card-r-content">
+            <div class="text">航线规划</div>
+        </div>
+    </a>
+
+    <!-- AI按钮，点击后触发一个模态框（modal），用于展示或交互与AI相关的功能 -->
+    <a type="button" data-bs-toggle="modal" data-bs-target="#standard-modal" class="card-r" id="ai_popup">
+        <div class="card-r-content">
+            <div class="text">AI</div>
+            <!-- AI图标的动态效果，利用多个 span 元素和 CSS 动画（不同延迟）实现动画效果 -->
+            <div class="ai-cartoon">
+                <span class="ai-cartoon-item" style="--delay:-0.6s"></span>
+                <span class="ai-cartoon-item" style="--delay:-0.4s"></span>
+                <span class="ai-cartoon-item" style="--delay:-0.2s"></span>
+                <span class="ai-cartoon-item" style="--delay:-0.5s"></span>
+                <span class="ai-cartoon-item" style="--delay:-0.3s"></span>
+                <span class="ai-cartoon-item" style="--delay:-0.1s"></span>
+            </div>
+        </div>
+    </a>
+
+    <!-- 完成航线按钮，点击后可能弹出侧边栏显示已完成的航线 -->
+    <a href="#" class="card-r" id="connectMarkersButton" type="button" data-bs-toggle="offcanvas"
+       data-bs-target="#offcanvasScrolling3" aria-controls="offcanvasScrolling">
+        <div class="card-r-content">
+            <div class="text">完成航线</div>
+        </div>
+    </a>
+
+    <!-- 清空地图按钮，用于移除地图上添加的所有标记或绘制内容 -->
+    <a href="#" class="card-r" id="removeMarkersButton">
+        <div class="card-r-content">
+            <div class="text">清空地图</div>
+        </div>
+    </a>
+
+</div>
+<!-- 右侧菜单栏 END -->
+
+<!-- 地图 START -->
+<!-- 地图容器，通过 Leaflet 库初始化地图，使用特定的CSS类控制样式 -->
+<div id="map" class="map-container"></div>
+<!-- 地图 END -->
+
+<!-- 右下角工具栏 START -->
+<nav class="spans-menu">
+    <!-- SPAN方块 START -->
+    <div class="spans" id="spans">
+        <!-- 这里通过JS动态添加 -->
+    </div>
+    <!-- SPAN方块 END -->
+
+    <!-- 信息选择框 START -->
+    <div class="input-card">
+        <!-- 播放暂停按钮区域 START -->
+        <div class="buttons">
+            <!-- 后退按钮：点击后可能触发上一帧或上一步的操作 -->
+            <a href="#" class="play_stop_button" id="back_button">
+                <img src="./static/img/icon/back_arrow.svg" alt="SVG Image" width="50%" height="50%">
+            </a>
+
+            <!-- 播放/暂停按钮：通过修改背景色及图片来体现当前状态 -->
+            <a href="#" class="play_stop_button" id="play_stop_button" style="background-color: rgba(224, 62, 54, 1)">
+                <img id="play_stop_button_img" src="./static/img/icon/run.svg" alt="SVG Image" width="60%" height="60%">
+            </a>
+
+            <!-- 前进按钮：点击后可能触发下一帧或下一步的操作 -->
+            <a href="#" class="play_stop_button" id="forward_button">
+                <img src="./static/img/icon/forward_arrow.svg" alt="SVG Image" width="50%" height="50%">
+            </a>
+        </div>
+        <!-- 播放暂停按钮区域 END -->
+    </div>
+    <!-- 信息选择框 END -->
+</nav>
+<!-- 右下角工具栏 END -->
+
+<!-- 色卡 START -->
+<div class="map-legend" id="color-legend">
+    <div class="legend-bg" id="legend-bg"></div>
+</div>
+<!-- 色卡 END -->
+
+<!-- 全屏按钮 START -->
+<a class="full-screen-button" id="full-screen-button">
+    <img class="full-screen-button_img" id="full-screen-button_img" src="./static/img/icon/fullscreen.svg"
+         alt="SVG Image">
+</a>
+<!-- 全屏按钮 END -->
+
+<!-- 底部弹出框 START -->
+<div id="bottomPopupDiv">一个弹出的DIV，用于展示某一点信息详情
+    <div class="container">
+        <table>
+            <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+                <th>Header 4</th>
+                <th>Header 5</th>
+                <th>Header 6</th>
+                <th>Header 7</th>
+                <th>Header 8</th>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+                <th>Header 4</th>
+                <th>Header 5</th>
+                <th>Header 6</th>
+                <th>Header 7</th>
+                <th>Header 8</th>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+                <th>Header 4</th>
+                <th>Header 5</th>
+                <th>Header 6</th>
+                <th>Header 7</th>
+                <th>Header 8</th>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+                <th>Header 4</th>
+                <th>Header 5</th>
+                <th>Header 6</th>
+                <th>Header 7</th>
+                <th>Header 8</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td>Data 6</td>
+                <td>Data 7</td>
+                <td>Data 8</td>
+            </tr>
+            <!-- 重复多行数据以展示滚动效果 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 底部弹出框 END -->
+
+<!-- AI弹出框 START -->
+<!-- 定义一个模态框，用于显示AI助手相关信息，使用Bootstrap的模态框组件 -->
+<div class="modal fade" id="standard-modal" tabindex="-1" aria-labelledby="standard-modalLabel" aria-hidden="true">
+    <!-- 模态框对话框容器 -->
+    <div class="modal-dialog">
+        <!-- 模态框内容区域 -->
+        <div class="modal-content">
+            <!-- 模态框头部 -->
+            <div class="modal-header">
+                <!-- 模态框标题，显示“AI助手” -->
+                <h1 class="modal-title fs-5" id="standard-modalLabel">AI助手</h1>
+                <!-- 关闭按钮，点击后关闭模态框。data-bs-dismiss="modal"属性使其与Bootstrap模态框组件联动 -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- 模态框主体 -->
+            <div class="modal-body"
+                 style="display: flex;flex-direction: column; /* 如果需要垂直排列，可以添加这个属性 */ ">
+                <!-- 第一个Toast组件，用于展示一段信息（例如天气详情） -->
+                <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <!-- Toast头部，包含图标、标题和时间 -->
+                    <div class="toast-header">
+                        <!-- 小图标，通常用于标识消息来源 -->
+                        <img src="./static/components/tapeli/assets/images/logo-sm.png" class="rounded me-2" height="16"
+                             alt="toast header"/>
+                        <!-- 标题 -->
+                        <strong class="me-auto">AI助理</strong>
+                        <!-- 显示信息发布时间（例如“11 分钟之前”） -->
+                        <small>11 分钟之前</small>
+                    </div>
+                    <!-- Toast主体，展示具体的信息内容 -->
+                    <div class="toast-body">
+                        早上好，今天是2024年10月17日，在深圳市南山区大学城，天气情况如下：
+                        温度：白天最高气温约为29℃，夜间最低气温将降至22℃左右。
+                        湿度：相对湿度在35%-75%之间。
+                        降水：今天白天局地有短时阵雨。
+                        风力：本地有东风1级，风力较为微弱。
+                        风向：主导风向为东风，这将为大学城带来较为清新的空气。
+                        此外，值得注意的是，今年第20号台风“纳沙”正逐渐靠近，预计将对深圳沿海地区和高地产生较大影响，阵风可能达到8-10级。尽管大学城位于内陆，但仍需关注后续天气变化，做好相应准备。
+                    </div>
+                </div>
+
+                <!-- 第二个Toast组件，背景色为蓝色（bg-primary）且文字为白色，通常用于突出重要提示 -->
+                <div class="toast fade show bg-primary text-white" role="alert" aria-live="assertive" aria-atomic="true"
+                     style="align-self: flex-end;margin-top: 20px">
+                    <!-- Toast主体 -->
+                    <div class="toast-body">
+                        这里未来2小时内气温变化情况
+                    </div>
+                </div>
+
+                <!-- 第三个Toast组件，展示当前时刻的信息及未来6小时内气温变化情况 -->
+                <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true"
+                     style="margin-top: 20px">
+                    <!-- Toast头部 -->
+                    <div class="toast-header">
+                        <!-- 小图标 -->
+                        <img src="./static/components/tapeli/assets/images/logo-sm.png" class="rounded me-2" height="16"
+                             alt="toast header"/>
+                        <!-- 标题 -->
+                        <strong class="me-auto">AI助理</strong>
+                        <!-- 时间标记，显示为“现在” -->
+                        <small>现在</small>
+                    </div>
+                    <!-- Toast主体 -->
+                    <div class="toast-body">
+                        这里未来6小时内气温变化情况如下
+                        <!-- 插入一张图片，展示气温变化的图表或示意图 -->
+                        <img src="./static/img/weather.png" style="width: 90%;padding: 5px">
+                    </div>
+                </div>
+
+            </div>
+            <!-- 模态框底部 -->
+            <div class="modal-footer">
+                <!-- 输入区域，用于用户输入对话内容或发送指令 -->
+                <div class="input-group">
+                    <!-- 输入框，用户可在此输入文字 -->
+                    <input type="text" class="form-control" id="example-custom"
+                           aria-label="Text input with dropdown button">
+                    <!-- 发送按钮，用于提交输入的内容 -->
+                    <button class="btn btn-primary dropdown-toggle" type="button"
+                            aria-expanded="false">发送
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- AI弹出框 END -->
+
+<!-- 单点模式弹出框 START -->
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+     id="offcanvasScrolling1" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框的头部，包含标题“详情数据”和关闭按钮 -->
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel1" style="padding-left: 1.2rem ">详情数据</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <!-- 弹出框的主体内容 -->
+    <div class="offcanvas-body">
+        <div class="row" style="--bs-gutter-x: 0px; ">
+            <div class="col-12">
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <!-- 地点信息 -->
+                        <div class="align-items-center">
+                            <div class="d-flex align-items-center">
+
+                                <div class="overflow-hidden">
+                                    <h4 class="m-0 text-dark fs-20">深圳大学城</h4>
+                                    <p class="my-1 text-muted fs-16">广东省 深圳市 南山区 桃园街道</p>
+                                    <span class="fs-15">
+                                            <i class="mdi mdi-message me-2 align-middle"></i>N24°31'1" E103°29‘27"<span>, Asia.Beijing(+8:00)
+                                            <span class="badge bg-primary-subtle text-primary px-2 py-1 fs-13 fw-normal">日出：6:35</span>
+                                            <span class="badge bg-primary-subtle text-primary px-2 py-1 fs-13 fw-normal">日落：18:24</span>
+                                            <span class="badge bg-primary-subtle text-primary px-2 py-1 fs-13 fw-normal">海拔：28m(2379ft)</span></span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        !-- 导航栏，用于切换不同的数据类型（基础信息、雷达、卫星、探空） -->
+                        <ul class="nav nav-underline border-bottom pt-2" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active p-2" id="profile_about_tab" data-bs-toggle="tab"
+                                   href="#profile_about" role="tab">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-information"></i></span>
+                                    <span class="d-none d-sm-block">基础信息</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link p-2" id="profile_experience_tab" data-bs-toggle="tab"
+                                   href="#profile_experience" role="tab">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-sitemap-outline"></i></span>
+                                    <span class="d-none d-sm-block">雷达</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link p-2" id="portfolio_education_tab" data-bs-toggle="tab"
+                                   href="#profile_education" role="tab">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-school"></i></span>
+                                    <span class="d-none d-sm-block">卫星</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link p-2" id="setting_tab" data-bs-toggle="tab"
+                                   href="#profile_setting" role="tab">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-school"></i></span>
+                                    <span class="d-none d-sm-block">探空</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- 选项卡内容 -->
+                        <div class="tab-content text-muted bg-white">
+                            <div class="tab-pane active show pt-4" id="profile_about" role="tabpanel">
+                                <h6 class="text-uppercase fs-13">实况信息</h6>
+                                <div class="row" style="--bs-gutter-x: 0px; ">
+                                    <div class="col-md-12 col-sm-12 col-md-12 mb-4">
+                                        <div class="">
+                                            <div class="justify-content-center mb-4">
+                                                <div class="row" style="--bs-gutter-x: 0px; ">
+                                                    <!-- 温度信息 -->
+                                                    <div class="col-md-6 col-xl-3">
+                                                        <a href="#">
+                                                            <div class="px-2 py-3 text-center">
+                                                                <p class="mb-2 text-dark">温度</p>
+                                                                <h3 class="m-0 mb-2 fs-24 text-black">25℃</h3>
+                                                                <p class="text-muted mb-0 fs-13">
+                                                                    <span class="text-success bg-success-subtle rounded-2 p-1 me-2"><i
+                                                                            class="mdi mdi-arrow-up-circle"></i> 2℃</span>
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <!-- 湿度信息 -->
+                                                    <div class="col-md-6 col-xl-3">
+                                                        <a href="#">
+                                                            <div class="px-2 py-3 text-center">
+                                                                <p class="mb-2 text-dark">湿度</p>
+                                                                <h3 class="m-0 mb-2 fs-24 text-black">87%</h3>
+                                                                <p class="text-muted mb-0 fs-13">
+                                                                    <span class="text-success bg-success-subtle rounded-2 p-1 me-2"><i
+                                                                            class="mdi mdi-arrow-up-circle"></i> 16%</span>
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <!-- 降水信息 -->
+                                                    <div class="col-md-6 col-xl-3">
+                                                        <a href="#">
+                                                            <div class="px-2 py-3 text-center">
+                                                                <p class="mb-2 text-dark">降水</p>
+                                                                <h3 class="m-0 mb-2 fs-24 text-black">小雨</h3>
+                                                                <p class="text-muted mb-0 fs-13">
+                                                                    <span class="text-danger bg-danger-subtle rounded-2 p-1 me-2">5mm/1H</span>
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <!-- 风力信息 -->
+                                                    <div class="col-md-6 col-xl-3">
+                                                        <a href="#">
+                                                            <div class="px-2 py-3 text-center">
+                                                                <p class="mb-2 text-dark">风力</p>
+                                                                <h3 class="m-0 mb-2 fs-24 text-black">3级</h3>
+                                                                <p class="text-muted mb-0 fs-13">
+                                                                    <span class="text-success bg-success-subtle rounded-2 p-1 me-2">东南风</span>
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- 数据图表区域 -->
+                                            <div id="linecolumn_area_chart" class="apex-charts"></div>
+                                            <div id="datalabel_line_chart" class="apex-charts"></div>
+                                            <div id="gradient_line_chart" class="apex-charts"></div>
+                                            <div id="basic_heatmap_chart" class="apex-charts"></div>
+                                            <div id="range_colors_chart" class="apex-charts"></div>
+
+                                            <h6 class="text-uppercase fs-13 pt-4">此地点的警报信息</h6>
+                                            <p>Geetings, fellow software enthusiasts! I'm thrilled to see your
+                                                intereset in exploring my profile. I'm Christian Mayo,
+                                                a 24-year-old software engineer from the United Kingdom. My
+                                                educational path led me to earn a Bachelor's Degeer in Computer
+                                                Science,
+                                                specializing in Software Engineering. With this qualification, I'm
+                                                equipped to dive into the world of coding and develooment,ready
+                                                to tackle exciting projects and contribute to cutting-edge
+                                                technological advancement...
+                                            </p>
+                                        </div>
+
+                                        <div class="skills-details mt-3">
+                                            <h6 class="text-uppercase fs-13">最新预报数据源</h6>
+
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">GFS 2024-10-11 6:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">GFS 2024-10-11 12:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">GFS 2024-10-11 18:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">GFS 2024-10-12 0:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">ICON 2024-10-12 0:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">ICON 2024-10-12 3:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">ECMWF 2024-10-12 3:00</span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><!-- end Experience -->
+
+                            <div class="tab-pane pt-4" id="profile_experience" role="tabpanel">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12 col-lg-12">
+                                            <ol class="profile-section list-unstyled mb-0 px-4">
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 128 128">
+                                                                <path fill="#fff"
+                                                                      d="m76.25.25l13.059.086c.246.191.445.316.656.41c2.367 1.07 4.933 1.836 7.066 3.258c6.184 4.11 12.223 8.441 18.258 12.77c2.805 2.007 5.57 4.097 8.156 6.37c1.922 1.688 2.785 4.083 2.79 6.637l-.005 80.371c-.003 1.121-.195 2.274-.507 3.352c-1.418 4.914-4.563 8.277-9.512 9.59c-2.61.691-5.367.906-8.074 1.129c-4.223.351-8.461.523-12.692.777l-8.004.5l-12.816.754l-7.879.492l-12.941.75l-6.688.274c-.215.011-.414.312-.617.48c-5.09 0-10.176 0-15.309-.082c-.246-.195-.433-.352-.652-.414c-3.102-.899-5.703-2.613-7.703-5.102c-2.77-3.441-5.402-6.988-8.066-10.511c-3.274-4.329-6.633-8.594-9.727-13.047a15.47 15.47 0 0 1-2.79-8.875a72122 72122 0 0 1 .009-71.211c0-.684.12-1.375.238-2.055C3.742 9.645 9.152 5.746 15.586 5.023c3.34-.375 6.703-.543 10.059-.765l8.87-.512l3.813-.25l11.5-.992l6.375-.5l10.559-.75l8.87-.524c.216-.015.415-.312.618-.48M25.945 114.184c.532.691 1.125 1.347 1.59 2.082c2.254 3.527 5.485 4.808 9.59 4.535l27.809-1.656l31.296-1.891l15.582-1.004c4.618-.371 6.848-2.867 6.938-7.5v-1l.035-75.863c.004-2.285-.785-3.883-2.613-5.16l-22.024-15.52c-3.543-2.578-7.304-3.781-11.66-3.437L57.824 9.594l-25.789 1.902l-16.187 1.262c-3.27.3-5.297 2.3-5.883 5.508a14 14 0 0 0-.207 2.48l-.067 66.242c-.023 4.34 1.305 7.95 3.903 11.27zm0 0"/>
+                                                                <path d="m25.887 114.117l-12.293-15.86c-2.598-3.32-3.926-6.929-3.903-11.269l.067-66.242c0-.828.062-1.668.207-2.48c.586-3.207 2.613-5.207 5.883-5.508l16.187-1.262l25.79-1.902L82.488 7.77c4.356-.344 8.117.859 11.66 3.437c7.262 5.285 14.66 10.383 22.024 15.52c1.828 1.277 2.617 2.875 2.613 5.16l-.035 75.867v1c-.09 4.629-2.32 7.125-6.938 7.496c-5.187.418-10.386.688-15.582 1.004l-31.296 1.89l-27.809 1.657c-4.105.273-7.336-1.008-9.59-4.535c-.465-.735-1.058-1.391-1.648-2.149m6.406-45.992v33.488l.008 6.246c.054 2.801 1.426 4.196 4.226 4.356c.703.039 1.414.015 2.121-.028l23.442-1.382l44.765-2.559c2.79-.156 4.079-1.379 4.34-4.144c.051-.497.035-1 .035-1.5l.004-64.477c0-.375.012-.75-.011-1.125c-.168-2.566-1.27-3.613-3.82-3.477l-23.071 1.329a43791 43791 0 0 0-32.418 1.898l-16.207.973c-2.066.132-3 1.023-3.312 3.043a10.6 10.6 0 0 0-.098 1.617zm57.172-52.727c-1.957-1.062-4.082-1.414-6.27-1.293c-3.363.184-6.726.461-10.09.704l-47.949 3.484c-1.449.105-2.906.21-4.336.469c-.48.086-1.086.57-1.234 1.008c-.11.308.375.93.73 1.27c.657.628 1.414 1.155 2.13 1.722c1.699 1.34 3.507 2.562 5.066 4.043c2.957 2.808 6.398 3.457 10.34 3.172l31.035-1.946l33.41-2.004c.305-.015.61-.109 1.281-.234c-.613-.637-.969-1.125-1.433-1.469a234 234 0 0 0-4.957-3.562a698 698 0 0 0-7.723-5.364m0 0"/>
+                                                                <path fill="#fff"
+                                                                      d="m32.293 68l.004-25.617c0-.54.016-1.086.098-1.617c.312-2.02 1.246-2.91 3.312-3.043l16.207-.973l32.418-1.898l23.07-1.329c2.551-.136 3.653.914 3.82 3.477c.024.375.012.75.012 1.125l-.004 64.477l-.035 1.5c-.261 2.765-1.55 3.988-4.34 4.144l-44.765 2.559l-23.442 1.382l-2.12.028c-2.801-.16-4.173-1.555-4.227-4.352l-.008-6.25zm45.766.066L65.191 48.461c-.449-.684-.89-.91-1.718-.82l-5.485.37l-10.09.739c-2.48.227-3.98 2.559-3.293 4.977l5.344.457v43.293l-3.64 1.027c-1.614.476-2.305 1.836-1.762 3.574l12.308-.707l4.848-.398c2.09-.344 3.215-1.625 3.496-3.715l-6.73-1.535V63.16l.5.7l15.468 24.152a361 361 0 0 0 7.004 10.46c1.707 2.45 4.223 3.2 7.051 2.59c1.77-.378 3.469-1.097 5.203-1.656c.903-.293 1.211-.832 1.207-1.844l-.03-44.5c0-2.601 0-2.601 2.573-3.12c2.602-.524 3.254-1.563 2.66-4.344l-15.55.945c-1.692.121-2.973 1.535-3.23 3.18c-.126.793.038 1.23.987 1.285l4.708.52v30.179a7435 7435 0 0 0-8.961-13.637zM89.55 15.441a1123 1123 0 0 1 7.636 5.32a234 234 0 0 1 4.958 3.563c.464.344.82.832 1.433 1.469l-1.281.234l-33.41 2.004l-31.035 1.946c-3.942.285-7.383-.364-10.34-3.172c-1.559-1.48-3.367-2.703-5.067-4.043c-.715-.567-1.472-1.094-2.129-1.723c-.355-.34-.84-.96-.73-1.27c.148-.437.758-.921 1.234-1.007c1.43-.258 2.887-.364 4.336-.469l47.95-3.484l10.09-.704c2.187-.12 4.312.23 6.355 1.336m0 0"/>
+                                                                <path d="m78.113 68.14l8.907 13.567v-30.18l-4.707-.52c-.95-.054-1.114-.491-.989-1.284c.258-1.645 1.54-3.059 3.23-3.18l15.551-.945c.594 2.78-.058 3.82-2.66 4.343c-2.574.516-2.574.516-2.574 3.121l.031 44.5c.004 1.012-.304 1.551-1.207 1.844l-5.203 1.656c-2.828.606-5.344-.14-7.05-2.59a367 367 0 0 1-7.004-10.46l-15.47-24.153c-.109-.172-.234-.332-.5-.699v32.563l6.731 1.535c-.281 2.09-1.406 3.37-3.496 3.715c-1.594.261-3.23.3-4.848.398l-12.308.707c-.543-1.738.148-3.098 1.762-3.574l3.64-1.027V54.184l-5.344-.457c-.687-2.418.813-4.75 3.293-4.977c3.356-.313 6.727-.504 10.09-.738c1.828-.125 3.664-.172 5.485-.371c.828-.09 1.27.136 1.718.82zm0 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <h5 class="fs-16 text-dark">短时临近降雨预警</h5>
+                                                        <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                            <div class="list-inline-item">广东-深圳</div>
+                                                            <div class="list-inline-item list-inline-item-second">
+                                                                深圳市气象局
+                                                            </div>
+                                                        </div>
+                                                        <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                            <div class="list-inline-item">2024-10-17
+                                                            </div>
+                                                            <div class="list-inline-item list-inline-item-second">
+                                                                07:12:00
+                                                            </div>
+                                                        </div>
+                                                        <p class="mb-0">描述性文字示例：Underlook 6 dynamic projects
+                                                            withing just 8
+                                                            months, showcasing my versatility and
+                                                            proactiveapprocach. Notable accomplishments include
+                                                            Designed.</p>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12 col-lg-12">
+                                            <ol class="profile-section list-unstyled mb-0 px-4">
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 256 232">
+                                                                <path fill="#fdb300"
+                                                                      d="M128 0L55.855 7.628L0 82.607l128 149.055L256 82.607L200.146 7.628z"/>
+                                                                <path fill="#eb6c00"
+                                                                      d="m0 82.608l128 149.054L51.846 82.608zm204.153 0L128 231.662L255.999 82.608z"/>
+                                                                <path fill="#fdad00"
+                                                                      d="M51.846 82.608L128 231.662l76.154-149.054z"/>
+                                                                <path fill="#fdd231"
+                                                                      d="m55.855 7.628l-4.009 74.979L128 0zm148.298 74.98l-4.008-74.98L128 .001z"/>
+                                                                <path fill="#fdad00"
+                                                                      d="M204.154 82.608h51.845l-55.854-74.98zM0 82.608h51.846l4.009-74.98z"/>
+                                                                <path fill="#feeeb7"
+                                                                      d="M128 0L51.846 82.607h152.308z"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <div>
+                                                            <h5 class="font-size-16 mb-1">单站雷达</h5>
+                                                            <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                                <div class="list-inline-item">湖北-恩施</div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    http://www.nmc.cn
+                                                                </div>
+                                                            </div>
+                                                            <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                                <div class="list-inline-item">2024-10-17
+                                                                </div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    07:12:00
+                                                                </div>
+                                                            </div>
+                                                            <img src="static/img/radar2.PNG" style="width: 100%">
+                                                            <p class="mb-0">描述性文字示例：Lead and grew the sketch
+                                                                product
+                                                                management team. Managed teams across Menio Park,
+                                                                Denver, New York and Remote offices.</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 128 128">
+                                                                <path fill="#fff"
+                                                                      d="m76.25.25l13.059.086c.246.191.445.316.656.41c2.367 1.07 4.933 1.836 7.066 3.258c6.184 4.11 12.223 8.441 18.258 12.77c2.805 2.007 5.57 4.097 8.156 6.37c1.922 1.688 2.785 4.083 2.79 6.637l-.005 80.371c-.003 1.121-.195 2.274-.507 3.352c-1.418 4.914-4.563 8.277-9.512 9.59c-2.61.691-5.367.906-8.074 1.129c-4.223.351-8.461.523-12.692.777l-8.004.5l-12.816.754l-7.879.492l-12.941.75l-6.688.274c-.215.011-.414.312-.617.48c-5.09 0-10.176 0-15.309-.082c-.246-.195-.433-.352-.652-.414c-3.102-.899-5.703-2.613-7.703-5.102c-2.77-3.441-5.402-6.988-8.066-10.511c-3.274-4.329-6.633-8.594-9.727-13.047a15.47 15.47 0 0 1-2.79-8.875a72122 72122 0 0 1 .009-71.211c0-.684.12-1.375.238-2.055C3.742 9.645 9.152 5.746 15.586 5.023c3.34-.375 6.703-.543 10.059-.765l8.87-.512l3.813-.25l11.5-.992l6.375-.5l10.559-.75l8.87-.524c.216-.015.415-.312.618-.48M25.945 114.184c.532.691 1.125 1.347 1.59 2.082c2.254 3.527 5.485 4.808 9.59 4.535l27.809-1.656l31.296-1.891l15.582-1.004c4.618-.371 6.848-2.867 6.938-7.5v-1l.035-75.863c.004-2.285-.785-3.883-2.613-5.16l-22.024-15.52c-3.543-2.578-7.304-3.781-11.66-3.437L57.824 9.594l-25.789 1.902l-16.187 1.262c-3.27.3-5.297 2.3-5.883 5.508a14 14 0 0 0-.207 2.48l-.067 66.242c-.023 4.34 1.305 7.95 3.903 11.27zm0 0"/>
+                                                                <path d="m25.887 114.117l-12.293-15.86c-2.598-3.32-3.926-6.929-3.903-11.269l.067-66.242c0-.828.062-1.668.207-2.48c.586-3.207 2.613-5.207 5.883-5.508l16.187-1.262l25.79-1.902L82.488 7.77c4.356-.344 8.117.859 11.66 3.437c7.262 5.285 14.66 10.383 22.024 15.52c1.828 1.277 2.617 2.875 2.613 5.16l-.035 75.867v1c-.09 4.629-2.32 7.125-6.938 7.496c-5.187.418-10.386.688-15.582 1.004l-31.296 1.89l-27.809 1.657c-4.105.273-7.336-1.008-9.59-4.535c-.465-.735-1.058-1.391-1.648-2.149m6.406-45.992v33.488l.008 6.246c.054 2.801 1.426 4.196 4.226 4.356c.703.039 1.414.015 2.121-.028l23.442-1.382l44.765-2.559c2.79-.156 4.079-1.379 4.34-4.144c.051-.497.035-1 .035-1.5l.004-64.477c0-.375.012-.75-.011-1.125c-.168-2.566-1.27-3.613-3.82-3.477l-23.071 1.329a43791 43791 0 0 0-32.418 1.898l-16.207.973c-2.066.132-3 1.023-3.312 3.043a10.6 10.6 0 0 0-.098 1.617zm57.172-52.727c-1.957-1.062-4.082-1.414-6.27-1.293c-3.363.184-6.726.461-10.09.704l-47.949 3.484c-1.449.105-2.906.21-4.336.469c-.48.086-1.086.57-1.234 1.008c-.11.308.375.93.73 1.27c.657.628 1.414 1.155 2.13 1.722c1.699 1.34 3.507 2.562 5.066 4.043c2.957 2.808 6.398 3.457 10.34 3.172l31.035-1.946l33.41-2.004c.305-.015.61-.109 1.281-.234c-.613-.637-.969-1.125-1.433-1.469a234 234 0 0 0-4.957-3.562a698 698 0 0 0-7.723-5.364m0 0"/>
+                                                                <path fill="#fff"
+                                                                      d="m32.293 68l.004-25.617c0-.54.016-1.086.098-1.617c.312-2.02 1.246-2.91 3.312-3.043l16.207-.973l32.418-1.898l23.07-1.329c2.551-.136 3.653.914 3.82 3.477c.024.375.012.75.012 1.125l-.004 64.477l-.035 1.5c-.261 2.765-1.55 3.988-4.34 4.144l-44.765 2.559l-23.442 1.382l-2.12.028c-2.801-.16-4.173-1.555-4.227-4.352l-.008-6.25zm45.766.066L65.191 48.461c-.449-.684-.89-.91-1.718-.82l-5.485.37l-10.09.739c-2.48.227-3.98 2.559-3.293 4.977l5.344.457v43.293l-3.64 1.027c-1.614.476-2.305 1.836-1.762 3.574l12.308-.707l4.848-.398c2.09-.344 3.215-1.625 3.496-3.715l-6.73-1.535V63.16l.5.7l15.468 24.152a361 361 0 0 0 7.004 10.46c1.707 2.45 4.223 3.2 7.051 2.59c1.77-.378 3.469-1.097 5.203-1.656c.903-.293 1.211-.832 1.207-1.844l-.03-44.5c0-2.601 0-2.601 2.573-3.12c2.602-.524 3.254-1.563 2.66-4.344l-15.55.945c-1.692.121-2.973 1.535-3.23 3.18c-.126.793.038 1.23.987 1.285l4.708.52v30.179a7435 7435 0 0 0-8.961-13.637zM89.55 15.441a1123 1123 0 0 1 7.636 5.32a234 234 0 0 1 4.958 3.563c.464.344.82.832 1.433 1.469l-1.281.234l-33.41 2.004l-31.035 1.946c-3.942.285-7.383-.364-10.34-3.172c-1.559-1.48-3.367-2.703-5.067-4.043c-.715-.567-1.472-1.094-2.129-1.723c-.355-.34-.84-.96-.73-1.27c.148-.437.758-.921 1.234-1.007c1.43-.258 2.887-.364 4.336-.469l47.95-3.484l10.09-.704c2.187-.12 4.312.23 6.355 1.336m0 0"/>
+                                                                <path d="m78.113 68.14l8.907 13.567v-30.18l-4.707-.52c-.95-.054-1.114-.491-.989-1.284c.258-1.645 1.54-3.059 3.23-3.18l15.551-.945c.594 2.78-.058 3.82-2.66 4.343c-2.574.516-2.574.516-2.574 3.121l.031 44.5c.004 1.012-.304 1.551-1.207 1.844l-5.203 1.656c-2.828.606-5.344-.14-7.05-2.59a367 367 0 0 1-7.004-10.46l-15.47-24.153c-.109-.172-.234-.332-.5-.699v32.563l6.731 1.535c-.281 2.09-1.406 3.37-3.496 3.715c-1.594.261-3.23.3-4.848.398l-12.308.707c-.543-1.738.148-3.098 1.762-3.574l3.64-1.027V54.184l-5.344-.457c-.687-2.418.813-4.75 3.293-4.977c3.356-.313 6.727-.504 10.09-.738c1.828-.125 3.664-.172 5.485-.371c.828-.09 1.27.136 1.718.82zm0 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <div>
+                                                            <h5 class="fs-16 text-dark">全国雷达拼图</h5>
+                                                            <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                                <div class="list-inline-item">中央气象台</div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    http://www.nmc.cn
+                                                                </div>
+                                                            </div>
+                                                            <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                                <div class="list-inline-item">2024-10-17
+                                                                </div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    07:12:00
+                                                                </div>
+                                                            </div>
+                                                            <img src="static/img/radar.PNG" style="width: 100%">
+                                                            <p class="mb-0">描述性文字示例：Responsible for the product
+                                                                management,
+                                                                product design, research and product partnerships
+                                                                teams at Notion.</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- end Experience -->
+
+                            <div class="tab-pane pt-4" id="profile_education" role="tabpanel">
+                                <div class="row">
+
+                                    <div class="col-md-12 col-sm-12 col-lg-6">
+                                        <h5 class="fs-16 text-dark fw-semibold mb-3 text-capitalize">My
+                                            Education</h5>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12 col-lg-12">
+                                            <ol class="profile-section list-unstyled mb-0 px-4">
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 128 128">
+                                                                <path fill="#fff"
+                                                                      d="m76.25.25l13.059.086c.246.191.445.316.656.41c2.367 1.07 4.933 1.836 7.066 3.258c6.184 4.11 12.223 8.441 18.258 12.77c2.805 2.007 5.57 4.097 8.156 6.37c1.922 1.688 2.785 4.083 2.79 6.637l-.005 80.371c-.003 1.121-.195 2.274-.507 3.352c-1.418 4.914-4.563 8.277-9.512 9.59c-2.61.691-5.367.906-8.074 1.129c-4.223.351-8.461.523-12.692.777l-8.004.5l-12.816.754l-7.879.492l-12.941.75l-6.688.274c-.215.011-.414.312-.617.48c-5.09 0-10.176 0-15.309-.082c-.246-.195-.433-.352-.652-.414c-3.102-.899-5.703-2.613-7.703-5.102c-2.77-3.441-5.402-6.988-8.066-10.511c-3.274-4.329-6.633-8.594-9.727-13.047a15.47 15.47 0 0 1-2.79-8.875a72122 72122 0 0 1 .009-71.211c0-.684.12-1.375.238-2.055C3.742 9.645 9.152 5.746 15.586 5.023c3.34-.375 6.703-.543 10.059-.765l8.87-.512l3.813-.25l11.5-.992l6.375-.5l10.559-.75l8.87-.524c.216-.015.415-.312.618-.48M25.945 114.184c.532.691 1.125 1.347 1.59 2.082c2.254 3.527 5.485 4.808 9.59 4.535l27.809-1.656l31.296-1.891l15.582-1.004c4.618-.371 6.848-2.867 6.938-7.5v-1l.035-75.863c.004-2.285-.785-3.883-2.613-5.16l-22.024-15.52c-3.543-2.578-7.304-3.781-11.66-3.437L57.824 9.594l-25.789 1.902l-16.187 1.262c-3.27.3-5.297 2.3-5.883 5.508a14 14 0 0 0-.207 2.48l-.067 66.242c-.023 4.34 1.305 7.95 3.903 11.27zm0 0"/>
+                                                                <path d="m25.887 114.117l-12.293-15.86c-2.598-3.32-3.926-6.929-3.903-11.269l.067-66.242c0-.828.062-1.668.207-2.48c.586-3.207 2.613-5.207 5.883-5.508l16.187-1.262l25.79-1.902L82.488 7.77c4.356-.344 8.117.859 11.66 3.437c7.262 5.285 14.66 10.383 22.024 15.52c1.828 1.277 2.617 2.875 2.613 5.16l-.035 75.867v1c-.09 4.629-2.32 7.125-6.938 7.496c-5.187.418-10.386.688-15.582 1.004l-31.296 1.89l-27.809 1.657c-4.105.273-7.336-1.008-9.59-4.535c-.465-.735-1.058-1.391-1.648-2.149m6.406-45.992v33.488l.008 6.246c.054 2.801 1.426 4.196 4.226 4.356c.703.039 1.414.015 2.121-.028l23.442-1.382l44.765-2.559c2.79-.156 4.079-1.379 4.34-4.144c.051-.497.035-1 .035-1.5l.004-64.477c0-.375.012-.75-.011-1.125c-.168-2.566-1.27-3.613-3.82-3.477l-23.071 1.329a43791 43791 0 0 0-32.418 1.898l-16.207.973c-2.066.132-3 1.023-3.312 3.043a10.6 10.6 0 0 0-.098 1.617zm57.172-52.727c-1.957-1.062-4.082-1.414-6.27-1.293c-3.363.184-6.726.461-10.09.704l-47.949 3.484c-1.449.105-2.906.21-4.336.469c-.48.086-1.086.57-1.234 1.008c-.11.308.375.93.73 1.27c.657.628 1.414 1.155 2.13 1.722c1.699 1.34 3.507 2.562 5.066 4.043c2.957 2.808 6.398 3.457 10.34 3.172l31.035-1.946l33.41-2.004c.305-.015.61-.109 1.281-.234c-.613-.637-.969-1.125-1.433-1.469a234 234 0 0 0-4.957-3.562a698 698 0 0 0-7.723-5.364m0 0"/>
+                                                                <path fill="#fff"
+                                                                      d="m32.293 68l.004-25.617c0-.54.016-1.086.098-1.617c.312-2.02 1.246-2.91 3.312-3.043l16.207-.973l32.418-1.898l23.07-1.329c2.551-.136 3.653.914 3.82 3.477c.024.375.012.75.012 1.125l-.004 64.477l-.035 1.5c-.261 2.765-1.55 3.988-4.34 4.144l-44.765 2.559l-23.442 1.382l-2.12.028c-2.801-.16-4.173-1.555-4.227-4.352l-.008-6.25zm45.766.066L65.191 48.461c-.449-.684-.89-.91-1.718-.82l-5.485.37l-10.09.739c-2.48.227-3.98 2.559-3.293 4.977l5.344.457v43.293l-3.64 1.027c-1.614.476-2.305 1.836-1.762 3.574l12.308-.707l4.848-.398c2.09-.344 3.215-1.625 3.496-3.715l-6.73-1.535V63.16l.5.7l15.468 24.152a361 361 0 0 0 7.004 10.46c1.707 2.45 4.223 3.2 7.051 2.59c1.77-.378 3.469-1.097 5.203-1.656c.903-.293 1.211-.832 1.207-1.844l-.03-44.5c0-2.601 0-2.601 2.573-3.12c2.602-.524 3.254-1.563 2.66-4.344l-15.55.945c-1.692.121-2.973 1.535-3.23 3.18c-.126.793.038 1.23.987 1.285l4.708.52v30.179a7435 7435 0 0 0-8.961-13.637zM89.55 15.441a1123 1123 0 0 1 7.636 5.32a234 234 0 0 1 4.958 3.563c.464.344.82.832 1.433 1.469l-1.281.234l-33.41 2.004l-31.035 1.946c-3.942.285-7.383-.364-10.34-3.172c-1.559-1.48-3.367-2.703-5.067-4.043c-.715-.567-1.472-1.094-2.129-1.723c-.355-.34-.84-.96-.73-1.27c.148-.437.758-.921 1.234-1.007c1.43-.258 2.887-.364 4.336-.469l47.95-3.484l10.09-.704c2.187-.12 4.312.23 6.355 1.336m0 0"/>
+                                                                <path d="m78.113 68.14l8.907 13.567v-30.18l-4.707-.52c-.95-.054-1.114-.491-.989-1.284c.258-1.645 1.54-3.059 3.23-3.18l15.551-.945c.594 2.78-.058 3.82-2.66 4.343c-2.574.516-2.574.516-2.574 3.121l.031 44.5c.004 1.012-.304 1.551-1.207 1.844l-5.203 1.656c-2.828.606-5.344-.14-7.05-2.59a367 367 0 0 1-7.004-10.46l-15.47-24.153c-.109-.172-.234-.332-.5-.699v32.563l6.731 1.535c-.281 2.09-1.406 3.37-3.496 3.715c-1.594.261-3.23.3-4.848.398l-12.308.707c-.543-1.738.148-3.098 1.762-3.574l3.64-1.027V54.184l-5.344-.457c-.687-2.418.813-4.75 3.293-4.977c3.356-.313 6.727-.504 10.09-.738c1.828-.125 3.664-.172 5.485-.371c.828-.09 1.27.136 1.718.82zm0 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <h5 class="fs-16 text-dark">短时临近降雨预警</h5>
+                                                        <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                            <div class="list-inline-item">广东-深圳</div>
+                                                            <div class="list-inline-item list-inline-item-second">
+                                                                深圳市气象局
+                                                            </div>
+                                                        </div>
+                                                        <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                            <div class="list-inline-item">2024-10-17
+                                                            </div>
+                                                            <div class="list-inline-item list-inline-item-second">
+                                                                07:12:00
+                                                            </div>
+                                                        </div>
+                                                        <p class="mb-0">描述性文字示例：Underlook 6 dynamic projects
+                                                            withing just 8
+                                                            months, showcasing my versatility and
+                                                            proactiveapprocach. Notable accomplishments include
+                                                            Designed.</p>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12 col-lg-12">
+                                            <ol class="profile-section list-unstyled mb-0 px-4">
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 256 232">
+                                                                <path fill="#fdb300"
+                                                                      d="M128 0L55.855 7.628L0 82.607l128 149.055L256 82.607L200.146 7.628z"/>
+                                                                <path fill="#eb6c00"
+                                                                      d="m0 82.608l128 149.054L51.846 82.608zm204.153 0L128 231.662L255.999 82.608z"/>
+                                                                <path fill="#fdad00"
+                                                                      d="M51.846 82.608L128 231.662l76.154-149.054z"/>
+                                                                <path fill="#fdd231"
+                                                                      d="m55.855 7.628l-4.009 74.979L128 0zm148.298 74.98l-4.008-74.98L128 .001z"/>
+                                                                <path fill="#fdad00"
+                                                                      d="M204.154 82.608h51.845l-55.854-74.98zM0 82.608h51.846l4.009-74.98z"/>
+                                                                <path fill="#feeeb7"
+                                                                      d="M128 0L51.846 82.607h152.308z"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <div>
+                                                            <h5 class="font-size-16 mb-1">FY2G 可见光</h5>
+                                                            <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                                <div class="list-inline-item">中央气象台</div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    http://www.nmc.cn
+                                                                </div>
+                                                            </div>
+                                                            <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                                <div class="list-inline-item">2024-10-17
+                                                                </div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    07:00:00
+                                                                </div>
+                                                            </div>
+                                                            <img src="static/img/kejianguang.JPG" style="width: 100%">
+                                                            <p class="mb-0">描述性文字示例：Lead and grew the sketch
+                                                                product
+                                                                management team. Managed teams across Menio Park,
+                                                                Denver, New York and Remote offices.</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="profile-item">
+                                                    <div class="avatar-sm profile-icon p-1">
+                                                        <div class="avatar-title rounded-2 bg-light"
+                                                             style="height: 35px; width: 35px;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 128 128">
+                                                                <path fill="#fff"
+                                                                      d="m76.25.25l13.059.086c.246.191.445.316.656.41c2.367 1.07 4.933 1.836 7.066 3.258c6.184 4.11 12.223 8.441 18.258 12.77c2.805 2.007 5.57 4.097 8.156 6.37c1.922 1.688 2.785 4.083 2.79 6.637l-.005 80.371c-.003 1.121-.195 2.274-.507 3.352c-1.418 4.914-4.563 8.277-9.512 9.59c-2.61.691-5.367.906-8.074 1.129c-4.223.351-8.461.523-12.692.777l-8.004.5l-12.816.754l-7.879.492l-12.941.75l-6.688.274c-.215.011-.414.312-.617.48c-5.09 0-10.176 0-15.309-.082c-.246-.195-.433-.352-.652-.414c-3.102-.899-5.703-2.613-7.703-5.102c-2.77-3.441-5.402-6.988-8.066-10.511c-3.274-4.329-6.633-8.594-9.727-13.047a15.47 15.47 0 0 1-2.79-8.875a72122 72122 0 0 1 .009-71.211c0-.684.12-1.375.238-2.055C3.742 9.645 9.152 5.746 15.586 5.023c3.34-.375 6.703-.543 10.059-.765l8.87-.512l3.813-.25l11.5-.992l6.375-.5l10.559-.75l8.87-.524c.216-.015.415-.312.618-.48M25.945 114.184c.532.691 1.125 1.347 1.59 2.082c2.254 3.527 5.485 4.808 9.59 4.535l27.809-1.656l31.296-1.891l15.582-1.004c4.618-.371 6.848-2.867 6.938-7.5v-1l.035-75.863c.004-2.285-.785-3.883-2.613-5.16l-22.024-15.52c-3.543-2.578-7.304-3.781-11.66-3.437L57.824 9.594l-25.789 1.902l-16.187 1.262c-3.27.3-5.297 2.3-5.883 5.508a14 14 0 0 0-.207 2.48l-.067 66.242c-.023 4.34 1.305 7.95 3.903 11.27zm0 0"/>
+                                                                <path d="m25.887 114.117l-12.293-15.86c-2.598-3.32-3.926-6.929-3.903-11.269l.067-66.242c0-.828.062-1.668.207-2.48c.586-3.207 2.613-5.207 5.883-5.508l16.187-1.262l25.79-1.902L82.488 7.77c4.356-.344 8.117.859 11.66 3.437c7.262 5.285 14.66 10.383 22.024 15.52c1.828 1.277 2.617 2.875 2.613 5.16l-.035 75.867v1c-.09 4.629-2.32 7.125-6.938 7.496c-5.187.418-10.386.688-15.582 1.004l-31.296 1.89l-27.809 1.657c-4.105.273-7.336-1.008-9.59-4.535c-.465-.735-1.058-1.391-1.648-2.149m6.406-45.992v33.488l.008 6.246c.054 2.801 1.426 4.196 4.226 4.356c.703.039 1.414.015 2.121-.028l23.442-1.382l44.765-2.559c2.79-.156 4.079-1.379 4.34-4.144c.051-.497.035-1 .035-1.5l.004-64.477c0-.375.012-.75-.011-1.125c-.168-2.566-1.27-3.613-3.82-3.477l-23.071 1.329a43791 43791 0 0 0-32.418 1.898l-16.207.973c-2.066.132-3 1.023-3.312 3.043a10.6 10.6 0 0 0-.098 1.617zm57.172-52.727c-1.957-1.062-4.082-1.414-6.27-1.293c-3.363.184-6.726.461-10.09.704l-47.949 3.484c-1.449.105-2.906.21-4.336.469c-.48.086-1.086.57-1.234 1.008c-.11.308.375.93.73 1.27c.657.628 1.414 1.155 2.13 1.722c1.699 1.34 3.507 2.562 5.066 4.043c2.957 2.808 6.398 3.457 10.34 3.172l31.035-1.946l33.41-2.004c.305-.015.61-.109 1.281-.234c-.613-.637-.969-1.125-1.433-1.469a234 234 0 0 0-4.957-3.562a698 698 0 0 0-7.723-5.364m0 0"/>
+                                                                <path fill="#fff"
+                                                                      d="m32.293 68l.004-25.617c0-.54.016-1.086.098-1.617c.312-2.02 1.246-2.91 3.312-3.043l16.207-.973l32.418-1.898l23.07-1.329c2.551-.136 3.653.914 3.82 3.477c.024.375.012.75.012 1.125l-.004 64.477l-.035 1.5c-.261 2.765-1.55 3.988-4.34 4.144l-44.765 2.559l-23.442 1.382l-2.12.028c-2.801-.16-4.173-1.555-4.227-4.352l-.008-6.25zm45.766.066L65.191 48.461c-.449-.684-.89-.91-1.718-.82l-5.485.37l-10.09.739c-2.48.227-3.98 2.559-3.293 4.977l5.344.457v43.293l-3.64 1.027c-1.614.476-2.305 1.836-1.762 3.574l12.308-.707l4.848-.398c2.09-.344 3.215-1.625 3.496-3.715l-6.73-1.535V63.16l.5.7l15.468 24.152a361 361 0 0 0 7.004 10.46c1.707 2.45 4.223 3.2 7.051 2.59c1.77-.378 3.469-1.097 5.203-1.656c.903-.293 1.211-.832 1.207-1.844l-.03-44.5c0-2.601 0-2.601 2.573-3.12c2.602-.524 3.254-1.563 2.66-4.344l-15.55.945c-1.692.121-2.973 1.535-3.23 3.18c-.126.793.038 1.23.987 1.285l4.708.52v30.179a7435 7435 0 0 0-8.961-13.637zM89.55 15.441a1123 1123 0 0 1 7.636 5.32a234 234 0 0 1 4.958 3.563c.464.344.82.832 1.433 1.469l-1.281.234l-33.41 2.004l-31.035 1.946c-3.942.285-7.383-.364-10.34-3.172c-1.559-1.48-3.367-2.703-5.067-4.043c-.715-.567-1.472-1.094-2.129-1.723c-.355-.34-.84-.96-.73-1.27c.148-.437.758-.921 1.234-1.007c1.43-.258 2.887-.364 4.336-.469l47.95-3.484l10.09-.704c2.187-.12 4.312.23 6.355 1.336m0 0"/>
+                                                                <path d="m78.113 68.14l8.907 13.567v-30.18l-4.707-.52c-.95-.054-1.114-.491-.989-1.284c.258-1.645 1.54-3.059 3.23-3.18l15.551-.945c.594 2.78-.058 3.82-2.66 4.343c-2.574.516-2.574.516-2.574 3.121l.031 44.5c.004 1.012-.304 1.551-1.207 1.844l-5.203 1.656c-2.828.606-5.344-.14-7.05-2.59a367 367 0 0 1-7.004-10.46l-15.47-24.153c-.109-.172-.234-.332-.5-.699v32.563l6.731 1.535c-.281 2.09-1.406 3.37-3.496 3.715c-1.594.261-3.23.3-4.848.398l-12.308.707c-.543-1.738.148-3.098 1.762-3.574l3.64-1.027V54.184l-5.344-.457c-.687-2.418.813-4.75 3.293-4.977c3.356-.313 6.727-.504 10.09-.738c1.828-.125 3.664-.172 5.485-.371c.828-.09 1.27.136 1.718.82zm0 0"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="exper-item-list">
+                                                        <div>
+                                                            <h5 class="fs-16 text-dark">FY4B 卫星云图</h5>
+                                                            <div class="list-inline list-inline-dots mb-1 fs-14">
+                                                                <div class="list-inline-item">中央气象台</div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    http://www.nmc.cn
+                                                                </div>
+                                                            </div>
+                                                            <div class="list-inline list-inline-dots mb-2 fs-14">
+                                                                <div class="list-inline-item">2024-10-17
+                                                                </div>
+                                                                <div class="list-inline-item list-inline-item-second">
+                                                                    07:00:00
+                                                                </div>
+                                                            </div>
+                                                            <img src="static/img/weixingyuntu.JPG" style="width: 100%">
+                                                            <p class="mb-0">描述性文字示例：Responsible for the product
+                                                                management,
+                                                                product design, research and product partnerships
+                                                                teams at Notion.</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- end education -->
+
+                            <div class="tab-pane pt-4" id="profile_setting" role="tabpanel">
+                                <div class="row">
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-xl-12">
+                                            <img src="static/img/tankong.png" style="width: 100%">
+                                            <h6 class="text-uppercase fs-13 pt-4">探空点详细信息</h6>
+                                            <p> 位置: N30°36'0", E114°2'0"</p>
+                                            <p> 海拔: 24m</p>
+                                            <p> 更新时间: 10月16日 11:15Z</p>
+                                            <p> 最大高度: 13,867m</p>
+                                            <p> 数据点个数: 103</p>
+                                            <p> 路径资料来源: GPS</p>
+                                            <p> 资料来源: NOAA GTS</p>
+                                            <p> 格式: fm94/BUFR</p>
+
+                                        </div>
+
+                                        <div class="skills-details mt-3">
+                                            <h6 class="text-uppercase fs-13">最新预报数据源</h6>
+
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">Wuhan ZHHH(57494) 2024-10-11 12:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">Yichang(57461) 2024-10-11 12:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">Changsha(57687) 2024-10-11 12:00</span>
+                                                <span class="badge bg-light px-3 text-dark py-2 fw-semibold">Fuyang(58203) 2024-10-11 12:00</span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end education -->
+
+                    </div> <!-- Tab panes -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- 单点模式弹出框 END -->
+
+<!-- 多点模式弹出框 START -->
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+     id="offcanvasScrolling2" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框的头部，包含标题和关闭按钮 -->
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel2">航线规划</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <!-- 弹出框的主体内容区域 -->
+    <div class="offcanvas-body">
+        <p>航线规划的内容</p>
+    </div>
+</div>
+<!-- 多点模式弹出框 END -->
+
+<!-- 航线规划的弹出框 START -->
+<div class="offcanvas offcanvas-bottom" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+     id="offcanvasScrolling3" aria-labelledby="offcanvasScrollingLabel">
+    <!-- 弹出框头部，包含标题和关闭按钮，去除了顶部和底部的内边距 -->
+    <div class="offcanvas-header" style="padding-top: 0px;padding-bottom: 0px">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel3">航线规划</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <!-- 弹出框的主体内容，包含 ApexCharts 图表容器 -->
+    <div class="offcanvas-body">
+        <div id="annotations_line_chart" class="apex-charts"></div>
+    </div>
+</div>
+<!-- 航线规划的弹出框 END -->
+
+
+<!-- 配置文件 -->
+<script src="./static/js/config.js"></script>
+
+
+<!-- JS 关键依赖：风场粒子和强度图-->
+<script src="./static/components/leaflet/leaflet-velocity.js"></script> <!-- 处理风场粒子动画 -->
+<script src="./static/components/leaflet/leaflet-vector-scalar.js"></script> <!-- 处理风场矢量数据 -->
+
+<!-- JS 地图逻辑 周奇凤PART-->
+<script src="static/js/map.js"></script> <!-- 处理地图交互 -->
+<script src="./static/js/rightMenu.js"></script> <!-- 右键菜单功能 -->
+<script src="./static/js/init.js"></script> <!-- 页面初始化 -->
+
+<!-- JS 底部弹出信息 梁嘉俊PART-->
+<script src="static/js/bottomPopupDiv.js"></script>
+
+<script src="./static/components/tapeli/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 组件支持 -->
+<script src="./static/components/tapeli/assets/js/app.js"></script> <!-- 主要的应用逻辑 -->
+
+<!-- Apexcharts JS -->
+<script src="./static/components/tapeli/assets/libs/apexcharts/apexcharts.min.js"></script> <!-- 引入 ApexCharts -->
+
+<!-- for basic area chart -->
+<script src="data/Coodinates/stock-prices.js"></script> <!-- 可能用于图表的数据 -->
+
+<!-- Boxplot Charts Init Js -->
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-heatmap.init.js"></script> <!-- 热力图初始化 -->
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-line.init.js"></script> <!-- 折线图初始化 -->
+<script src="./static/components/tapeli/assets/js/pages/apexcharts-mixed.init.js"></script> <!-- 混合图初始化 -->
+
+<!-- Widgets Init Js -->
+<script src="./static/components/tapeli/assets/js/pages/widgets.init.js"></script> <!-- 处理小部件（如统计信息） -->
+</body>
+</html>

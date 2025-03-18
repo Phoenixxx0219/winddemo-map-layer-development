@@ -24,6 +24,18 @@ Object.keys(colors).forEach(key => {
 });
 
 // 瓦片服务
+// 定义全局配置变量，包含地图中心、缩放级别以及天地图的 URL 模板
+var TILE_MAP = {
+    tiandituKey: "e81a9d4054ebc4b8f0fa40057cf0e3b9",
+    mapCenter: [22.045, 113.816],
+    zoom: 9,
+    // 天地图矢量底图 URL 模板（vec_w）
+    tileUrlBase: "https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=",
+    // 天地图标注层 URL 模板（cva_w）
+    tileUrlLabel: "https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk="
+};
+
+
 // zoom大于11时采用高德瓦片,TILE_Standard 标准瓦片；TILE_Satellite 卫星；仅限广东；zoom小于等于11时采用wind瓦片，全球瓦片
 const TILE_Standard = 'http://43.139.63.132/guangdong_gaode/Standard/{z}/{x}/{y}/tile.webp';
 const TILE_Satellite = 'http://43.139.63.132/guangdong_gaode/Satellite/{z}/{x}/{y}/tile.webp';

@@ -9,6 +9,11 @@
     padding: 0;
 }
 
+/* 让 Leaflet 瓦片变为黑白 */
+.leaflet-tile {
+    filter: grayscale(100%) !important;
+}
+
 .map-container {
     background-color: rgba(0, 0, 0, 0.6);
 }
