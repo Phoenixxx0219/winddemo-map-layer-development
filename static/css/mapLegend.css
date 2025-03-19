@@ -11,11 +11,9 @@ body {
     z-index: 99999;
     display: flex;
     flex-direction: column;
-    background-color: rgba(169, 169, 169, 0.5);
-    border-radius: 8px; /* rounded */
+    background-color: rgba(255, 255, 255, .4);
+    border-radius: 0px; /* rounded */
     padding: 8px; /* p-2 */
-    border: 1px solid #ccc;
-    box-shadow: 0px 2px 4px #2f332a;
 }
 
 /* 图例背景 */
@@ -41,7 +39,7 @@ body {
 .color-box {
     width: 12px; /* w-3 */
     height: 22px; /* h-6 */
-    border: 1px solid #000; /* 设置 1 像素的黑色边框 */
+    border: 1px solid #ffffff70; /* 设置 1 像素的黑色边框 */
 }
 
 /* 文字列 */

@@ -18,6 +18,7 @@ const colors = {
     warning: 'rgba(224, 62, 54, 0.8)',
     critical: 'rgba(255, 105, 105, 0.8)'
 };
+
 const root = document.documentElement;
 Object.keys(colors).forEach(key => {
     root.style.setProperty(`--${key}-rgba`, colors[key]);
@@ -25,7 +26,7 @@ Object.keys(colors).forEach(key => {
 
 // 瓦片服务
 // 定义全局配置变量，包含地图中心、缩放级别以及天地图的 URL 模板
-var TILE_MAP = {
+const TILE_MAP = {
     tiandituKey: "e81a9d4054ebc4b8f0fa40057cf0e3b9",
     mapCenter: [22.045, 113.816],
     zoom: 9,
@@ -37,7 +38,6 @@ var TILE_MAP = {
     tileUrlLabel: "https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk="
 };
 
-
 // 雷达图像
 const RADAR_CONFIG = {
     bounds: [
@@ -47,69 +47,113 @@ const RADAR_CONFIG = {
     opacity: 0.6
 };
 
-// 雷达图例
-const RADAR_LEGEND = [
-    {
-        "color": "rgb(153, 85, 201)",
-        "text": "70"
-    },
-    {
-        "color": "rgb(255, 0, 255)",
-        "text": "65"
-    },
-    {
-        "color": "rgb(101, 0, 0)",
-        "text": "60"
-    },
-    {
-        "color": "rgb(166, 0, 0)",
-        "text": "55"
-    },
-    {
-        "color": "rgb(255, 0, 0)",
-        "text": "50"
-    },
-    {
-        "color": "rgb(255, 144, 2)",
-        "text": "45"
-    },
-    {
-        "color": "rgb(231, 192, 0)",
-        "text": "40"
-    },
-    {
-        "color": "rgb(255, 255, 0)",
-        "text": "35"
-    },
-    {
-        "color": "rgb(0, 144, 0)",
-        "text": "30"
-    },
-    {
-        "color": "rgb(0, 200, 0)",
-        "text": "25"
-    },
-    {
-        "color": "rgb(0, 239, 0)",
-        "text": "20"
-    },
-    {
-        "color": "rgb(1, 0, 246)",
-        "text": "15"
-    },
-    {
-        "color": "rgb(1, 160, 246)",
-        "text": "10"
-    },
-    {
-        "color": "rgb(0, 236, 236)",
-        "text": "5"
-    },
-    {
-        "color": "rgba(0, 0, 0, 0)",
-        "text": "0"
-    }
-];
+// 图例
+const LEGEND = {
+    RADAR: [
+        {
+            "color": "rgb(153, 85, 201)",
+            "text": "70"
+        },
+        {
+            "color": "rgb(255, 0, 255)",
+            "text": "65"
+        },
+        {
+            "color": "rgb(101, 0, 0)",
+            "text": "60"
+        },
+        {
+            "color": "rgb(166, 0, 0)",
+            "text": "55"
+        },
+        {
+            "color": "rgb(255, 0, 0)",
+            "text": "50"
+        },
+        {
+            "color": "rgb(255, 144, 2)",
+            "text": "45"
+        },
+        {
+            "color": "rgb(231, 192, 0)",
+            "text": "40"
+        },
+        {
+            "color": "rgb(255, 255, 0)",
+            "text": "35"
+        },
+        {
+            "color": "rgb(0, 144, 0)",
+            "text": "30"
+        },
+        {
+            "color": "rgb(0, 200, 0)",
+            "text": "25"
+        },
+        {
+            "color": "rgb(0, 239, 0)",
+            "text": "20"
+        },
+        {
+            "color": "rgb(1, 0, 246)",
+            "text": "15"
+        },
+        {
+            "color": "rgb(1, 160, 246)",
+            "text": "10"
+        },
+        {
+            "color": "rgb(0, 236, 236)",
+            "text": "5"
+        },
+        {
+            "color": "rgba(0, 0, 0, 0)",
+            "text": "0"
+        }
+    ],
+    SATELLITE: [
+        {
+            "color": "rgb(176, 23, 31)",
+            "text": "230"
+        },
+        {
+            "color": "rgb(227, 23, 13)",
+            "text": "225"
+        },
+        {
+            "color": "rgb(255, 0, 0)",
+            "text": "220"
+        },
+        {
+            "color": "rgb(255, 153, 18)",
+            "text": "215"
+        },
+        {
+            "color": "rgb(227, 207, 87)",
+            "text": "210"
+        },
+        {
+            "color": "rgb(255, 255, 0)",
+            "text": "205"
+        },
+        {
+            "color": "rgb(56, 94, 15)",
+            "text": "200"
+        },
+        {
+            "color": "rgb(0, 255, 0)",
+            "text": "195"
+        },
+        {
+            "color": "rgb(30, 144, 255)",
+            "text": "190"
+        },
+        {
+            "color": "rgba(0, 0, 0, 0)",
+            "text": "min"
+        }
+    ]
+};
 
 
 // 播放速度，1000代表每1000ms切换一张图片

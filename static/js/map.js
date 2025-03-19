@@ -37,6 +37,8 @@ var tiandituLabel = L.tileLayer(
     }
 ).addTo(map);
 
+let currentRadarLayer = null;
+let lastToken = null;
 
 // 雷达图层
 function RadarLayer(imageUrl) {
@@ -45,7 +47,6 @@ function RadarLayer(imageUrl) {
     });
 }
 
-let currentRadarLayer = null;
 // 切换图层
 function changeRadarLayer(imageUrl) {
     if (currentRadarLayer) {
@@ -99,7 +100,10 @@ function changeMaps() {
                 '\n滑块总数：', menuItem_SPANS_NUMBER,
                 '\n播放滑块id:', spanValue,
                 '\n由此计算的请求时间为：', formattedRequestTime);
-
+            
+            if(lastToken != tokenValue) {
+                createLegend(tokenValue);
+            }
             // 构造雷达图像路径
             const imageUrl = `./data/radar/${formattedRequestTime}.png`;
             changeRadarLayer(imageUrl);
@@ -192,21 +196,24 @@ function changeMaps() {
 const legendContainer = document.getElementById('legend-bg');
 
 // 生成图例
-function createLegend() {
+function createLegend(token) {
+    // 清空之前的图例内容，防止多次生成
+    legendContainer.innerHTML = '';
+    
     // 创建颜色块和文字
     const colorCol = document.createElement('div');
     colorCol.className = 'legend-colors';
     const labelCol = document.createElement('div');
     labelCol.className = 'legend-labels';
 
-    RADAR_LEGEND.forEach((item, index) => {
+    LEGEND[token].forEach((item, index) => {
         const colorBox = document.createElement('span');
         colorBox.className = 'color-box';
         colorBox.style.backgroundColor = item.color;
         colorCol.appendChild(colorBox);
 
         const label = document.createElement('span');
-        label.className = `label-text ${index === RADAR_LEGEND.length - 1 ? 'last' : ''}`;
+        label.className = `label-text ${index === LEGEND[token].length - 1 ? 'last' : ''}`;
         label.innerText = item.text;
         labelCol.appendChild(label);
     });
@@ -215,8 +222,6 @@ function createLegend() {
     legendContainer.appendChild(colorCol);
     legendContainer.appendChild(labelCol);
 }
-
-createLegend();
 
 // // 生成图例
 // function createLegend() {
