@@ -144,9 +144,27 @@ function initSpans() {
             current_spans_index = span_item_active.getAttribute('data-index')
             // 执行图层切换，并更换SPAN文字
             changeMaps()
-                .then(responseTime => {
-                    // 在异步请求完成后，将 responseTime 设置到 childParagraph.innerHTML
-                    childParagraph.innerHTML = responseTime;
+                .then(formattedRequestTime => {
+                    // 解析 UTC 时间为 Date 对象
+                    const year = parseInt(formattedRequestTime.slice(0, 4));
+                    const month = parseInt(formattedRequestTime.slice(4, 6)) - 1; // 月份从 0 开始
+                    const day = parseInt(formattedRequestTime.slice(6, 8));
+                    const hour = parseInt(formattedRequestTime.slice(8, 10));
+                    const minute = parseInt(formattedRequestTime.slice(10, 12));
+
+                    let utcDate = new Date(Date.UTC(year, month, day, hour, minute)); // 解析 UTC 时间
+
+                    // 获取北京时间的 月、日、时、分
+                    const bjMonth = String(utcDate.getMonth() + 1).padStart(2, '0'); // 补零
+                    const bjDay = String(utcDate.getDate()).padStart(2, '0'); // 补零
+                    const bjHour = String(utcDate.getHours()).padStart(2, '0'); // 补零
+                    const bjMinute = String(utcDate.getMinutes()).padStart(2, '0'); // 补零
+
+                    // **格式化输出：06月04日 08:00**
+                    const formattedTime = `${bjMonth}.${bjDay} ${bjHour}:${bjMinute}`;
+
+                    // 更新 childParagraph 显示格式化时间
+                    childParagraph.innerHTML = formattedTime;
                 })
                 .catch(err => {
                     console.error('请求失败或处理出错:', err);

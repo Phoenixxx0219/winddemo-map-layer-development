@@ -3,28 +3,67 @@ body {
     background-color: #f0f0f0;
 }
 
+/* 图例容器 */
 .map-legend {
     position: absolute;
-    bottom: 30px;   /* 在SPAN方块的上面 */
-    left: 10px;    /* 屏幕右下角 */
+    bottom: 10px;   /* 靠近底部 */
+    left: 15px;     /* 靠近左侧 */
     z-index: 99999;
-}
-
-.legend-bg {
-    transition: all .3s;
-    height: 20px;
     display: flex;
-    align-items: center;
-    border-radius: 20px;
-    width: 400px;
-    margin-left: 20px;
+    flex-direction: column;
+    background-color: rgba(169, 169, 169, 0.5);
+    border-radius: 8px; /* rounded */
+    padding: 8px; /* p-2 */
+    border: 1px solid #ccc;
     box-shadow: 0px 2px 4px #2f332a;
-    padding: 0 5px;
 }
 
-.value-label {
-    text-align: center;
-    font-size: 14px;
-    color: #FFFFFF;
-    flex: 1;
+/* 图例背景 */
+.legend-bg {
+    display: flex;
+    flex-direction: row; /* 横向排列 */
 }
+
+/* 颜色块与文字的容器 */
+#legend-bg {
+    display: flex;
+    flex-direction: row; /* 横向排列 */
+    gap: 4px; /* 间距 */
+}
+
+/* 颜色块列 */
+.legend-colors {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 颜色块 */
+.color-box {
+    width: 12px; /* w-3 */
+    height: 22px; /* h-6 */
+    border: 1px solid #000; /* 设置 1 像素的黑色边框 */
+}
+
+/* 文字列 */
+.legend-labels {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2px;
+    font-size: 12px;
+    color: #000;
+    margin-top: -12px; /* 整体上移半个色块高度 */
+}
+
+.label-text {
+    height: 23.5px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/* 第一个标签特殊处理 */
+.label-text:first-child {
+    margin-top: 22px; /* 下移一个色块高度补偿 */
+}
+
+

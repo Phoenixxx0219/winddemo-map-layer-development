@@ -47,9 +47,73 @@ const RADAR_CONFIG = {
     opacity: 0.6
 };
 
+// 雷达图例
+const RADAR_LEGEND = [
+    {
+        "color": "rgb(153, 85, 201)",
+        "text": "70"
+    },
+    {
+        "color": "rgb(255, 0, 255)",
+        "text": "65"
+    },
+    {
+        "color": "rgb(101, 0, 0)",
+        "text": "60"
+    },
+    {
+        "color": "rgb(166, 0, 0)",
+        "text": "55"
+    },
+    {
+        "color": "rgb(255, 0, 0)",
+        "text": "50"
+    },
+    {
+        "color": "rgb(255, 144, 2)",
+        "text": "45"
+    },
+    {
+        "color": "rgb(231, 192, 0)",
+        "text": "40"
+    },
+    {
+        "color": "rgb(255, 255, 0)",
+        "text": "35"
+    },
+    {
+        "color": "rgb(0, 144, 0)",
+        "text": "30"
+    },
+    {
+        "color": "rgb(0, 200, 0)",
+        "text": "25"
+    },
+    {
+        "color": "rgb(0, 239, 0)",
+        "text": "20"
+    },
+    {
+        "color": "rgb(1, 0, 246)",
+        "text": "15"
+    },
+    {
+        "color": "rgb(1, 160, 246)",
+        "text": "10"
+    },
+    {
+        "color": "rgb(0, 236, 236)",
+        "text": "5"
+    },
+    {
+        "color": "rgba(0, 0, 0, 0)",
+        "text": "0"
+    }
+];
+
 
 // 播放速度，1000代表每1000ms切换一张图片
-const TIME_INTERVAL = 2000;
+const TIME_INTERVAL = 1000;
 
 // 算法信息
 const RADAR_ALGORITHM_DIR_DICT = {
@@ -103,7 +167,7 @@ const MENUS = [
         "IMAGE_URL": "./static/img/meteorology/雷达.jpg",
         "ICON_URL": "./static/img/icon/雷达.svg",
         "INTERVAL": 6, // 雷达6分钟一次
-        "SPANS_NUMBER": 10 + 20 , // 往前推1小时，往后推2小时
+        "SPANS_NUMBER": 10 + 30 , // 往前推1小时，往后推2小时
         "SPANS_ACTUAL_VALUE_NUMBER": 10
     },
     {
@@ -111,56 +175,9 @@ const MENUS = [
         "TOKEN": "SATELLITE", // TOKEN用于数据请求
         "IMAGE_URL": "./static/img/meteorology/降雨.jpg",
         "ICON_URL": "./static/img/icon/降雨.svg",
-        "INTERVAL": 6, // 卫星6分钟一次
-        "SPANS_NUMBER": 8 + 12, // 往前推2小时，往后推3小时，这样可以直接避免大概1小时延迟
-        "SPANS_ACTUAL_VALUE_NUMBER": 8
-    },
-    {
-        "NAME": "降雨",
-        "TOKEN": "RAIN", // TOKEN用于数据请求
-        "IMAGE_URL": "./static/img/meteorology/降雨.jpg",
-        "ICON_URL": "./static/img/icon/降雨.svg",
-        "INTERVAL": 60, // GFS一个小时一次
-        "SPANS_NUMBER": 6 + 24,  // 往前推6小时，往前推24小时
-        "SPANS_ACTUAL_VALUE_NUMBER": 6
-    },
-    {
-        "NAME": "风",
-        "TOKEN": "WIND", // TOKEN用于数据请求
-        "IMAGE_URL": "./static/img/meteorology/雷暴大风.jpg",
-        "ICON_URL": "./static/img/icon/雷暴大风.svg",
-        "INTERVAL": 60, // GFS一个小时一次
-        "SPANS_NUMBER": 6 + 24,  // 往前推6小时，往前推24小时
-        "SPANS_ACTUAL_VALUE_NUMBER": 6
-    },
-    {
-        "NAME": "温度",
-        "TOKEN": "TEMP", // TOKEN用于数据请求
-        "IMAGE_URL": "./static/img/meteorology/强对流.jpg",
-        "ICON_URL": "./static/img/icon/强对流.svg",
-        "INTERVAL": 60, // GFS一个小时一次
-        "SPANS_NUMBER": 6 + 24,  // 往前推6小时，往前推24小时
-        "SPANS_ACTUAL_VALUE_NUMBER": 6
-    },
-    {
-        "NAME": "气压",
-        "TOKEN": "PRESSURE", // TOKEN用于数据请求
-        // todo:需要更换为气压的图片
-        "IMAGE_URL": "./static/img/meteorology/冰雹.jpg",
-        "ICON_URL": "./static/img/icon/冰雹.svg",
-        "INTERVAL": 60, // GFS一个小时一次
-        "SPANS_NUMBER": 6 + 24,  // 往前推6小时，往前推24小时
-        "SPANS_ACTUAL_VALUE_NUMBER": 6
-    },
-    {
-        "NAME": "湿度",
-        "TOKEN": "HUMIDITY", // TOKEN用于数据请求
-        // todo:需要更换为湿度的图片
-        "IMAGE_URL": "./static/img/meteorology/冰雹.jpg",
-        "ICON_URL": "./static/img/icon/冰雹.svg",
-        "INTERVAL": 60, // GFS一个小时一次
-        "SPANS_NUMBER": 6 + 24,  // 往前推6小时，往前推24小时
-        "SPANS_ACTUAL_VALUE_NUMBER": 6
+        "INTERVAL": 15, // 卫星6分钟一次
+        "SPANS_NUMBER": 4 + 12, // 往前推2小时，往后推3小时，这样可以直接避免大概1小时延迟
+        "SPANS_ACTUAL_VALUE_NUMBER": 4
     }
 ]
 

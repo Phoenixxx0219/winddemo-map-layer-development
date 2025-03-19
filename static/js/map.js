@@ -46,72 +46,70 @@ function RadarLayer(imageUrl) {
 }
 
 let currentRadarLayer = null;
-
-// 移除图层
-function removeRadarLayer() {
-    if (currentRadarLayer) {
-        map.removeLayer(currentRadarLayer);
-        currentRadarLayer = null;
-    }
-}
-
-// 增加图层
-function addRadarLayer(imageUrl) {
-    currentRadarLayer = RadarLayer(imageUrl);
-    currentRadarLayer.addTo(map, {pane: 'dataPane'});
-}
-
-
-// 图层切换触发函数
-function changeMaps() {
-    // 查询具有 class 'card--active' 的元素
-    const activeCard = document.querySelector('.card-l--active');
-
-    // 查询对应MENUS的基础信息(时间间隔、滑块总数量、代表真实值的滑块数量)
-    const activeCardIndexStr = activeCard.getAttribute('data-index')
-    const menuItem_INTERVAL = MENUS[parseInt(activeCardIndexStr)]['INTERVAL']
-    const menuItem_SPANS_NUMBER = MENUS[parseInt(activeCardIndexStr)]['SPANS_NUMBER']
-    const menuItem_SPANS_ACTUAL_VALUE_NUMBER = MENUS[parseInt(activeCardIndexStr)]['SPANS_ACTUAL_VALUE_NUMBER']
-
-    // 查询具有 class 'span__item--active' 的元素
-    const activeSpan = document.querySelector('.span__item--active');
-
-    // 获取该元素的 token 属性值
-    const tokenValue = activeCard.getAttribute('token');
-    const spanValue = activeSpan.getAttribute('data-index');
-
-    // 计算时间参数
-    const timeOffset = current_spans_index - (menuItem_SPANS_ACTUAL_VALUE_NUMBER - 1)
-    console.log("timeOffset:",timeOffset)
-    console.log("current_spans_index:",current_spans_index)
-
-    // 请求时间默认为202406040800（北京时间）
-    const dateStr = "202406040800";
-    const year = dateStr.substring(0, 4);
-    const month = dateStr.substring(4, 6) - 1; // 月份从 0 开始
-    const day = dateStr.substring(6, 8);
-    const hours = dateStr.substring(8, 10);
-    const minutes = dateStr.substring(10, 12);
-
-    const currentTime = new Date(year, month, day, hours, minutes);
-    const requestTime = new Date(currentTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
-    const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
-
-    console.log('当前已点击新的菜单：', tokenValue,
-        '\n时间间隔为：', menuItem_INTERVAL,
-        '\n真实值滑块数量：', menuItem_SPANS_ACTUAL_VALUE_NUMBER,
-        '\n滑块总数：', menuItem_SPANS_NUMBER,
-        '\n播放滑块id:', spanValue,
-        '\n由此计算的请求时间为：', formattedRequestTime);
-
-    const imageUrl = `./data/radar/${formattedRequestTime}.png`;
-
+// 切换图层
+function changeRadarLayer(imageUrl) {
     if (currentRadarLayer) {
         currentRadarLayer.setUrl(imageUrl); // 更新图像URL
     } else {
         currentRadarLayer = RadarLayer(imageUrl);
         currentRadarLayer.addTo(map);
     }
+}
+
+
+function changeMaps() {
+    return new Promise((resolve, reject) => {
+        try {
+            // 查询具有 class 'card--active' 的元素
+            const activeCard = document.querySelector('.card-l--active');
+
+            // 查询对应 MENUS 的基础信息
+            const activeCardIndexStr = activeCard.getAttribute('data-index');
+            const menuItem_INTERVAL = MENUS[parseInt(activeCardIndexStr)]['INTERVAL'];
+            const menuItem_SPANS_NUMBER = MENUS[parseInt(activeCardIndexStr)]['SPANS_NUMBER'];
+            const menuItem_SPANS_ACTUAL_VALUE_NUMBER = MENUS[parseInt(activeCardIndexStr)]['SPANS_ACTUAL_VALUE_NUMBER'];
+
+            // 查询具有 class 'span__item--active' 的元素
+            const activeSpan = document.querySelector('.span__item--active');
+
+            // 获取该元素的 token 属性值
+            const tokenValue = activeCard.getAttribute('token');
+            const spanValue = activeSpan.getAttribute('data-index');
+
+            // 计算时间参数
+            const timeOffset = current_spans_index - (menuItem_SPANS_ACTUAL_VALUE_NUMBER - 1);
+            console.log("timeOffset:", timeOffset);
+            console.log("current_spans_index:", current_spans_index);
+
+            // 请求时间默认为 202406040800（北京时间）
+            const dateStr = "202406040800";
+            const year = dateStr.substring(0, 4);
+            const month = dateStr.substring(4, 6) - 1; // 月份从 0 开始
+            const day = dateStr.substring(6, 8);
+            const hours = dateStr.substring(8, 10);
+            const minutes = dateStr.substring(10, 12);
+
+            const currentTime = new Date(year, month, day, hours, minutes);
+            const requestTime = new Date(currentTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
+            const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
+
+            console.log('当前已点击新的菜单：', tokenValue,
+                '\n时间间隔为：', menuItem_INTERVAL,
+                '\n真实值滑块数量：', menuItem_SPANS_ACTUAL_VALUE_NUMBER,
+                '\n滑块总数：', menuItem_SPANS_NUMBER,
+                '\n播放滑块id:', spanValue,
+                '\n由此计算的请求时间为：', formattedRequestTime);
+
+            // 构造雷达图像路径
+            const imageUrl = `./data/radar/${formattedRequestTime}.png`;
+            changeRadarLayer(imageUrl);
+
+            // **返回时间信息**
+            resolve(formattedRequestTime);
+        } catch (error) {
+            reject(error);
+        }
+    });
 
     // 构造后端请求的 URL 和请求参数
     // let url = 'http://10.249.46.209:8080/ImageData/';
@@ -189,6 +187,58 @@ function changeMaps() {
     //     });
     // });
 }
+
+// 获取图例容器
+const legendContainer = document.getElementById('legend-bg');
+
+// 生成图例
+function createLegend() {
+    // 创建颜色块和文字
+    const colorCol = document.createElement('div');
+    colorCol.className = 'legend-colors';
+    const labelCol = document.createElement('div');
+    labelCol.className = 'legend-labels';
+
+    RADAR_LEGEND.forEach((item, index) => {
+        const colorBox = document.createElement('span');
+        colorBox.className = 'color-box';
+        colorBox.style.backgroundColor = item.color;
+        colorCol.appendChild(colorBox);
+
+        const label = document.createElement('span');
+        label.className = `label-text ${index === RADAR_LEGEND.length - 1 ? 'last' : ''}`;
+        label.innerText = item.text;
+        labelCol.appendChild(label);
+    });
+
+    // 组合两个列
+    legendContainer.appendChild(colorCol);
+    legendContainer.appendChild(labelCol);
+}
+
+createLegend();
+
+// // 生成图例
+// function createLegend() {
+//     RADAR_LEGEND.forEach(item => {
+//         // 创建颜色块
+//         let colorBlock = document.createElement('div');
+//         colorBlock.classList.add('legend-item');
+//         colorBlock.style.backgroundColor = item.color;
+
+//         // 创建文字标签
+//         let textLabel = document.createElement('span');
+//         textLabel.classList.add('value-label');
+//         textLabel.innerText = item.text;
+
+//         // 组合元素
+//         colorBlock.appendChild(textLabel);
+//         legendContainer.appendChild(colorBlock);
+//     });
+// }
+
+// // 初始化图例
+// createLegend();
 
 
 // // 01. 风场强度标量示例
