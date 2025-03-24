@@ -13,7 +13,7 @@ var span_items, span_item_active; //span对象，在initSpans被重新赋初始�
  *******************************/
 function initLeftMenu() {
     // console.log("initLeftMenu");
-    let leftMenu = document.getElementById('x-left-menu')
+    let leftMenu = document.getElementById('x-data-menu')
 
     // ① 清空菜单(MENUS)所有子元素
     while (leftMenu.firstChild) {
@@ -31,13 +31,13 @@ function initLeftMenu() {
     for (let i = 0; i < MENUS.length; i++) {
         let aTag = document.createElement('a');
         aTag.href = '#';
-        aTag.className = 'card-l';
+        aTag.className = 'card-d';
         // 每个方块设定其编号，保存在data-index中，方便获取
         aTag.setAttribute('data-index', i);
         aTag.setAttribute('token', MENUS[i]['TOKEN']);
         aTag.style.background = "url('" + MENUS[i]['IMAGE_URL'] + "')";
         let divTag = document.createElement('div');
-        divTag.className = 'card-l-content';
+        divTag.className = 'card-d-content';
         let imgTag = document.createElement('img');
         imgTag.className = 'icon';
         imgTag.src = MENUS[i]['ICON_URL'];
@@ -46,7 +46,7 @@ function initLeftMenu() {
         textTag.innerText = MENUS[i]['NAME'];
         // 对于第0个，初始化时就是唤醒状态（active）
         if (i === 0) {
-            aTag.className = 'card-l card-l--active';
+            aTag.className = 'card-d card-d--active';
         }
         aTag.appendChild(divTag);
         divTag.appendChild(imgTag);
@@ -55,16 +55,16 @@ function initLeftMenu() {
     }
 
     // ③ 绑定菜单项(CardItems)点击的动画效果，且点击时触发函数initSpans()
-    let CardItems = document.querySelectorAll('.card-l');
-    let CardItemActive = document.querySelector('.card-l--active');
+    let CardItems = document.querySelectorAll('.card-d');
+    let CardItemActive = document.querySelector('.card-d--active');
     for (var i = 0; i < CardItems.length; i++) {
         CardItems[i].addEventListener('click', function () {
-            if (!this.classList.contains('card-l--active')) {
+            if (!this.classList.contains('card-d--active')) {
                 document.body.style.backgroundColor = `#${this.getAttribute('data-background')}`;
-                CardItemActive.classList.remove('card-l--active');
-                this.classList.add('card-l--active');
-                CardItemActive.classList.add('card-l--animate');
-                this.classList.add('card-l--animate');
+                CardItemActive.classList.remove('card-d--active');
+                this.classList.add('card-d--active');
+                CardItemActive.classList.add('card-d--animate');
+                this.classList.add('card-d--animate');
                 CardItemActive = this;
                 initSpans();// 点击的时候sub-menu要刷新
             }
@@ -85,7 +85,7 @@ function initLeftMenu() {
 function initSpans() {
     // console.log("initSpans");
     // 找到当前哪个leftMenu被点击，从而确定span数量
-    const activeCard = document.querySelector('.card-l--active');
+    const activeCard = document.querySelector('.card-d--active');
     const activeCardIndexStr = activeCard.getAttribute('data-index');
     var spanNumber = MENUS[parseInt(activeCardIndexStr)]["SPANS_NUMBER"]
     var spanActualNumber = MENUS[parseInt(activeCardIndexStr)]["SPANS_ACTUAL_VALUE_NUMBER"]
@@ -272,7 +272,7 @@ document.getElementById('full-screen-button').addEventListener('click', function
     var leftMenu = document.getElementById('left-menu');
     var fullScreenButton = document.getElementById('full-screen-button');
     var fullScreenButtonImg = document.getElementById('full-screen-button_img');
-    var cards = document.querySelectorAll('.card-l');
+    var cards = document.querySelectorAll('.card-d');
     leftMenu.classList.toggle('hidden'); // 切换hidden类
     fullScreenButton.classList.toggle('hidden');
     fullScreenButtonImg.classList.toggle('hidden');

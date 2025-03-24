@@ -155,6 +155,11 @@ const LEGEND = {
     ]
 };
 
+const LEGEND_UNIT = {
+    RADAR: "dBZ",
+    SATELLITE: "灰度值"
+}
+
 
 // 播放速度，1000代表每1000ms切换一张图片
 const TIME_INTERVAL = 1000;

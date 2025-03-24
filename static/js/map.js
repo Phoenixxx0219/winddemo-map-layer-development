@@ -62,7 +62,7 @@ function changeMaps() {
     return new Promise((resolve, reject) => {
         try {
             // 查询具有 class 'card--active' 的元素
-            const activeCard = document.querySelector('.card-l--active');
+            const activeCard = document.querySelector('.card-d--active');
 
             // 查询对应 MENUS 的基础信息
             const activeCardIndexStr = activeCard.getAttribute('data-index');
@@ -192,6 +192,8 @@ function changeMaps() {
     // });
 }
 
+// 获取图例父容器
+const legendWrapper = document.getElementById('color-legend');
 // 获取图例容器
 const legendContainer = document.getElementById('legend-bg');
 
@@ -199,6 +201,20 @@ const legendContainer = document.getElementById('legend-bg');
 function createLegend(token) {
     // 清空之前的图例内容，防止多次生成
     legendContainer.innerHTML = '';
+
+    // 检查并移除之前的图例标题
+    const oldTitle = document.querySelector('.legend-title');
+    if (oldTitle) {
+        legendWrapper.removeChild(oldTitle);
+    }
+
+    // 创建图例标题（单位）
+    const legendTitle = document.createElement('div');
+    legendTitle.className = 'legend-title';
+    legendTitle.innerText = LEGEND_UNIT[token] ? `${LEGEND_UNIT[token]}` : ''; // 根据 token 设置单位
+    if (legendTitle.innerText) {
+        legendWrapper.insertBefore(legendTitle, legendContainer); // 将标题插入到图例顶部
+    }
     
     // 创建颜色块和文字
     const colorCol = document.createElement('div');

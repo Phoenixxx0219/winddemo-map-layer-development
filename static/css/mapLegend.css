@@ -16,6 +16,15 @@ body {
     padding: 8px; /* p-2 */
 }
 
+/* 图例标题 */
+.legend-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px; /* 与图例之间的间距 */
+    text-align: center;
+}
+
 /* 图例背景 */
 .legend-bg {
     display: flex;
@@ -63,5 +72,3 @@ body {
 .label-text:first-child {
     margin-top: 22px; /* 下移一个色块高度补偿 */
 }
-
-

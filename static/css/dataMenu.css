@@ -1,25 +1,26 @@
-.x-left-menu {
+.x-data-menu {
     z-index: 999;
     position: fixed; /* 固定位置 */
-    top: 100px; /* 距离顶部20px */
-    left: 0; /* 距离左侧20px */
+    top: 50px; /* 距离顶部20px */
+    right: 0px; /* 距离左侧20px */
     display: flex; /* 使用Flexbox布局 */
     flex-direction: column; /* 竖向排列 */
+    justify-content: flex-end;
     padding-right: 10px; /* div的内边距 */
     padding-top: 10px; /* div的内边距 */
     padding-bottom: 10px; /* div的内边距 */
     padding-left: 10px; /* div的内边距 */
     background: rgba(255, 255, 255, .4);
-    width: 50px;
+    width: 120px;
     transition: transform 0.3s ease; /* 添加过渡效果 */
 }
 
 /* 当添加.hidden类时，菜单向左移动并隐藏 */
-.x-left-menu.hidden {
-    transform: translateX(-100%);
+.x-data-menu.hidden {
+    transform: translateX(100%);
 }
 
-.card-l {
+.card-d {
     width: 72px;
     height: 48px;
     font-size: 12px;
@@ -32,6 +33,7 @@
     justify-content: space-between; /* 图标和文字分别位于上下两端 */
     padding: 3px;
     margin: 5px;
+    margin-left: auto; /* 自动外边距将元素推向右侧 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden; /* 确保蒙版不会溢出卡片边界 */
     animation-name: close_card;
@@ -40,11 +42,11 @@
     transition: transform 0.8s ease; /* 添加过渡效果 */
 }
 
-.card-l.hidden {
-    transform: translateX(-100%);
+.card-d.hidden {
+    transform: translateX(100%);
 }
 
-.card-l::before {
+.card-d::before {
     content: "";
     position: absolute;
     top: 0;
@@ -57,15 +59,15 @@
 
 }
 
-.card-l:first-child {
+.card-d:first-child {
     margin-top: 0;
 }
 
-.card-l--animate {
+.card-d--animate {
     animation-duration: 0.5s;
 }
 
-.card-l--active {
+.card-d--active {
     height: 96px;
     width: 96px;
     animation-name: open_card;
@@ -119,7 +121,7 @@
     }
 }
 
-.card-l-content {
+.card-d-content {
     position: relative;
     z-index: 999; /* 确保内容在蒙版之上 */
     height: 100%;
@@ -128,10 +130,10 @@
     justify-content: space-between;
     padding: 0px;
     box-sizing: border-box;
-    text-align:left;
+    text-align: left;
 }
 
-.card-l-content .icon {
+.card-d-content .icon {
     font-size: 12px;
     color: white;
     height: 30%;
@@ -139,7 +141,7 @@
     margin: 2px 2px;
 }
 
-.card-l-content .text {
+.card-d-content .text {
     color: white;
     /*font-size: 9px;*/
     margin: 5px;
