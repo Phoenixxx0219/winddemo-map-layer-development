@@ -16,9 +16,9 @@
 }
 
 /* 当添加.hidden类时，菜单向左移动并隐藏 */
-.x-data-menu.hidden {
+/* .x-data-menu.hidden {
     transform: translateX(100%);
-}
+} */
 
 .card-d {
     width: 72px;
@@ -42,9 +42,9 @@
     transition: transform 0.8s ease; /* 添加过渡效果 */
 }
 
-.card-d.hidden {
+/* .card-d.hidden {
     transform: translateX(100%);
-}
+} */
 
 .card-d::before {
     content: "";

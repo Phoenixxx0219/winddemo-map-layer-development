@@ -12,11 +12,11 @@
 
     <!-- 外部CSS样式文件，设置页面整体样式 -->
     <link rel="stylesheet" href="./static/css/style.css"/>
-    <!-- 左侧菜单栏的样式 -->
+    <!-- 右侧数据菜单栏的样式 -->
     <link rel="stylesheet" href="./static/css/dataMenu.css"/>
     <!-- 地图容器的样式 -->
     <link rel="stylesheet" href="./static/css/map.css"/>
-    <!-- 其他悬浮菜单样式 -->
+    <!-- 进度条样式 -->
     <link rel="stylesheet" href="./static/css/spanMenu.css"/>
     <!-- 地图图例样式 -->
     <link rel="stylesheet" href="./static/css/mapLegend.css"/>
@@ -28,8 +28,6 @@
 
     <!-- 引入 Leaflet 地图库的JavaScript -->
     <script src="./static/components/leaflet/leaflet.js"></script>
-    <!-- Leaflet.canvaslabel 插件，用于在canvas上绘制标签 -->
-    <script src="./static/components/leaflet/Leaflet.canvaslabel.js"></script>
     <!-- jQuery 库 -->
     <script src="./static/components/jquery/jquery.js"></script>
     <!-- underscore.js 库，为JavaScript提供实用工具函数 -->
@@ -38,9 +36,6 @@
     <script src="./static/components/backbone/backbone-min.js"></script>
     <!-- Leaflet blinkmarker 插件，用于地图上显示闪烁标记 -->
     <script src="./static/components/leaflet/blinkmarker.js"></script>
-
-    <!-- 引入存放城市坐标数据的 JavaScript 文件 -->
-    <script src="./data/Coodinates/cities.js" charset="utf-8"></script>
 
     <!-- Tapeli 相关的CSS文件，可能用于页面某部分的样式（比如按钮、图标等） -->
     <link href="./static/components/tapeli/assets/css/app.css" rel="stylesheet" type="text/css" id="app-style"/>
@@ -79,11 +74,10 @@
 </head>
 <body>
 
-<!-- 左侧菜单栏 START -->
-<!-- 左侧菜单容器，可能包含多个功能项或导航项 -->
+<!-- 右侧数据菜单栏 START -->
 <div class="x-data-menu" id="x-data-menu">
 </div>
-<!-- 左侧菜单栏 END -->
+<!-- 右侧数据菜单栏 END -->
 
 <!-- 地图 START -->
 <!-- 地图容器，通过 Leaflet 库初始化地图，使用特定的CSS类控制样式 -->
@@ -133,34 +127,16 @@
 <!-- 配置文件 -->
 <script src="./static/js/config.js"></script>
 
-
-<!-- JS 关键依赖：风场粒子和强度图-->
-<script src="./static/components/leaflet/leaflet-velocity.js"></script> <!-- 处理风场粒子动画 -->
-<script src="./static/components/leaflet/leaflet-vector-scalar.js"></script> <!-- 处理风场矢量数据 -->
-
 <!-- JS 地图逻辑 周奇凤PART-->
 <script src="static/js/map.js"></script> <!-- 处理地图交互 -->
 <script src="./static/js/rightMenu.js"></script> <!-- 右键菜单功能 -->
 <script src="./static/js/init.js"></script> <!-- 页面初始化 -->
 
 <!-- JS 底部弹出信息 梁嘉俊PART-->
-<script src="static/js/bottomPopupDiv.js"></script>
+<!-- <script src="static/js/bottomPopupDiv.js"></script> -->
 
 <script src="./static/components/tapeli/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 组件支持 -->
 <script src="./static/components/tapeli/assets/js/app.js"></script> <!-- 主要的应用逻辑 -->
 
-<!-- Apexcharts JS -->
-<script src="./static/components/tapeli/assets/libs/apexcharts/apexcharts.min.js"></script> <!-- 引入 ApexCharts -->
-
-<!-- for basic area chart -->
-<script src="data/Coodinates/stock-prices.js"></script> <!-- 可能用于图表的数据 -->
-
-<!-- Boxplot Charts Init Js -->
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-heatmap.init.js"></script> <!-- 热力图初始化 -->
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-line.init.js"></script> <!-- 折线图初始化 -->
-<script src="./static/components/tapeli/assets/js/pages/apexcharts-mixed.init.js"></script> <!-- 混合图初始化 -->
-
-<!-- Widgets Init Js -->
-<script src="./static/components/tapeli/assets/js/pages/widgets.init.js"></script> <!-- 处理小部件（如统计信息） -->
 </body>
 </html>
