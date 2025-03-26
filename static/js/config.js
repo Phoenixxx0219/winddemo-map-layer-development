@@ -160,6 +160,12 @@ const LEGEND_UNIT = {
     SATELLITE: "灰度值"
 }
 
+// 工具栏状态
+const TOOLBAR_STATUS = {
+    "TRACK": "track",
+    "MEASURE": "measure",
+    "CLEAN": "clean"
+}
 
 // 播放速度，1000代表每1000ms切换一张图片
 const TIME_INTERVAL = 1000;

@@ -165,6 +165,11 @@ function initSpans() {
 
                     // 更新 childParagraph 显示格式化时间
                     childParagraph.innerHTML = formattedTime;
+
+                    // 在图层切换后绘制单体轮廓
+                    if (activeButton === TOOLBAR_STATUS.TRACK) {
+                        drawEntityOutline(current_spans_index);
+                    }
                 })
                 .catch(err => {
                     console.error('请求失败或处理出错:', err);

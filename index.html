@@ -83,13 +83,13 @@
 
 <!-- 右侧工具栏 START -->
 <div class="toolbar">
-    <div class="control-button" onclick="enableTrack()" title="单体追踪">
+    <div class="control-button" data-function="track" onclick="enableTrack()" title="单体追踪">
         <img src="./static/img/icon/location.svg" class="control-icon" alt="单体追踪" />
     </div>
-    <div class="control-button" onclick="enableMeasure()" title="测量方向和速度">
+    <div class="control-button" data-function="measure" onclick="enableMeasure()" title="测量方向和速度">
         <img src="./static/img/icon/ruler.svg" class="control-icon" alt="测量方向和速度" />
     </div>
-    <div class="control-button" onclick="enableClean()" title="清除标记">
+    <div class="control-button" data-function="clean" onclick="enableClean()" title="清除标记">
         <img src="./static/img/icon/clean.svg" class="control-icon" alt="清除标记" />
     </div>
     <!-- 其他按钮 -->
@@ -145,9 +145,9 @@
 <script src="./static/js/config.js"></script>
 
 <!-- JS 地图逻辑 -->
-<script src="static/js/map.js"></script> <!-- 处理地图交互 -->
+<script src="./static/js/map.js"></script> <!-- 处理地图交互 -->
 <script src="./static/js/init.js"></script> <!-- 页面初始化 -->
-<script src="./static/js/toolBar.js"></script> <!-- 页面初始化 -->
+<script src="./static/js/toolBar.js"></script> <!-- 工具栏交互 -->
 
 <!-- JS 底部弹出信息 梁嘉俊PART-->
 <!-- <script src="static/js/bottomPopupDiv.js"></script> -->
