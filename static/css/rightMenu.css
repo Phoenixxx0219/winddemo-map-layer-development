@@ -1,7 +1,7 @@
 .right-menu {
     z-index: 999;
     position: fixed; /* 固定位置 */
-    top: 100px; /* 距离顶部20px */
+    top: 300px; /* 距离顶部20px */
     right: 0; /* 距离左侧20px */
     display: flex; /* 使用Flexbox布局 */
     flex-direction: column; /* 竖向排列 */
@@ -11,7 +11,7 @@
     padding-bottom: 10px; /* div的内边距 */
     padding-left: 10px; /* div的内边距 */
     background: rgba(255, 255, 255, .4);
-    width: 120px;
+    width: 100px;
     transition: transform 0.3s ease; /* 添加过渡效果 */
 }
 

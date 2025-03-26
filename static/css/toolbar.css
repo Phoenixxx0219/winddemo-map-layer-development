@@ -1,0 +1,44 @@
+.toolbar {
+    position: fixed;
+    right: 10px; /* 靠右边 */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column; /* 竖向排列 */
+    align-items: center; /* 水平居中 */
+    gap: 10px;
+    background-color: rgba(255, 255, 255, .4);
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 32px; /* 控制宽度 */
+    z-index: 1000;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(55, 65, 81, 0.381); /* 按钮背景 */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+/* 鼠标悬停时变亮 */
+/* .control-button:hover {
+    background-color: rgba(75, 85, 99, 1);
+    transform: translateY(-2px);
+} */
+
+.control-button.selected {
+    background-color: rgb(255, 252, 57); /* 选中时高亮 */
+}
+
+.control-icon {
+    width: 20px;
+    height: 20px;
+    fill: #fff; /* 图标颜色 */
+}

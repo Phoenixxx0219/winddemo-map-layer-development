@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="./static/css/style.css"/>
     <!-- 右侧数据菜单栏的样式 -->
     <link rel="stylesheet" href="./static/css/dataMenu.css"/>
+    <!-- 右侧工具栏的样式 -->
+    <link rel="stylesheet" href="./static/css/toolbar.css"/>
     <!-- 地图容器的样式 -->
     <link rel="stylesheet" href="./static/css/map.css"/>
     <!-- 进度条样式 -->
@@ -79,6 +81,21 @@
 </div>
 <!-- 右侧数据菜单栏 END -->
 
+<!-- 右侧工具栏 START -->
+<div class="toolbar">
+    <div class="control-button" onclick="enableTrack()" title="单体追踪">
+        <img src="./static/img/icon/location.svg" class="control-icon" alt="单体追踪" />
+    </div>
+    <div class="control-button" onclick="enableMeasure()" title="测量方向和速度">
+        <img src="./static/img/icon/ruler.svg" class="control-icon" alt="测量方向和速度" />
+    </div>
+    <div class="control-button" onclick="enableClean()" title="清除标记">
+        <img src="./static/img/icon/clean.svg" class="control-icon" alt="清除标记" />
+    </div>
+    <!-- 其他按钮 -->
+</div>
+<!-- 右侧工具栏 END -->
+
 <!-- 地图 START -->
 <!-- 地图容器，通过 Leaflet 库初始化地图，使用特定的CSS类控制样式 -->
 <div id="map" class="map-container"></div>
@@ -127,10 +144,10 @@
 <!-- 配置文件 -->
 <script src="./static/js/config.js"></script>
 
-<!-- JS 地图逻辑 周奇凤PART-->
+<!-- JS 地图逻辑 -->
 <script src="static/js/map.js"></script> <!-- 处理地图交互 -->
-<script src="./static/js/rightMenu.js"></script> <!-- 右键菜单功能 -->
 <script src="./static/js/init.js"></script> <!-- 页面初始化 -->
+<script src="./static/js/toolBar.js"></script> <!-- 页面初始化 -->
 
 <!-- JS 底部弹出信息 梁嘉俊PART-->
 <!-- <script src="static/js/bottomPopupDiv.js"></script> -->
