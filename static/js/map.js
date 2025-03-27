@@ -39,6 +39,7 @@ var tiandituLabel = L.tileLayer(
 
 let currentRadarLayer = null;
 let lastToken = null;
+let currentToken = null;
 
 // 雷达图层
 function RadarLayer(imageUrl) {
@@ -94,6 +95,7 @@ function changeMaps() {
             const requestTime = new Date(currentTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
             const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
 
+            currentToken = tokenValue;
             console.log('当前已点击新的菜单：', tokenValue,
                 '\n时间间隔为：', menuItem_INTERVAL,
                 '\n真实值滑块数量：', menuItem_SPANS_ACTUAL_VALUE_NUMBER,
@@ -245,31 +247,37 @@ let entityLayers = [];
 
 // 绘制单体轮廓
 function drawEntityOutline(current_spans_index) {
-    // 加载 JSON 文件
-    fetch("./data/test.json") // JSON 文件路径
-        .then(response => response.json())
-        .then(data => {
-            // 清除之前的图层
-            clearEntityLayers();
+    if(currentToken == "RADAR" ) {
+        // 加载 JSON 文件
+        fetch("./data/test.json") // JSON 文件路径
+            .then(response => response.json())
+            .then(data => {
+                // 清除之前的图层
+                clearEntityLayers();
 
-            // 查询当前滑块的索引
-            const activeSpan = document.querySelector(".span__item--active");
-            if (!activeSpan) {
-                console.warn("未找到滑块，无法绘制轮廓");
-                return;
-            }
-            const currentIndex = parseInt(activeSpan.getAttribute("data-index"));
+                // 查询当前滑块的索引
+                const activeSpan = document.querySelector(".span__item--active");
+                if (!activeSpan) {
+                    console.warn("未找到滑块，无法绘制轮廓");
+                    return;
+                }
+                const currentIndex = parseInt(activeSpan.getAttribute("data-index"));
 
-            // 遍历所有单体，绘制符合条件的轮廓
-            data.entities.forEach(entity => {
-                entity.spanData.forEach(span => {
-                    if (span.index === currentIndex + 1 && span.outline.length > 0) {
-                        drawOutline(span.outline, entity.id);
-                    }
+                // 遍历所有单体，绘制符合条件的轮廓
+                data.entities.forEach(entity => {
+                    entity.spanData.forEach(span => {
+                        if (span.index === currentIndex + 1 && span.outline.length > 0) {
+                            drawOutline(span.outline, entity.id);
+                        }
+                    });
                 });
-            });
-        })
-        .catch(error => console.error("加载 JSON 文件失败:", error));
+            })
+            .catch(error => console.error("加载 JSON 文件失败:", error));
+    }
+    else {
+        // 清除之前的图层
+        clearEntityLayers();
+    }
 }
 
 // 清除之前绘制的轮廓图层
@@ -283,20 +291,15 @@ function drawOutline(outline, entityId) {
     // 将 outline 转换为 Leaflet 坐标
     const latLngs = outline.map(coord => [coord[0], coord[1]]);
     const polygon = L.polygon(latLngs, {
-        color: getEntityColor(entityId), // 动态分配颜色
+        color: "#ff0000",
         weight: 2,
-        fillOpacity: 0.4
+        fillOpacity: 0,
+        dashArray: "5, 5"
     }).addTo(map);
 
     // 绑定弹窗信息
     polygon.bindPopup(`单体 ID: ${entityId}`);
     entityLayers.push(polygon);
-}
-
-// 根据 entityId 选择不同颜色
-function getEntityColor(entityId) {
-    const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
-    return colors[entityId % colors.length];
 }
 
 

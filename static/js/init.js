@@ -167,8 +167,10 @@ function initSpans() {
                     childParagraph.innerHTML = formattedTime;
 
                     // 在图层切换后绘制单体轮廓
-                    if (activeButton === TOOLBAR_STATUS.TRACK) {
+                    if (activeButton == TOOLBAR_STATUS.TRACK) {
                         drawEntityOutline(current_spans_index);
+                    } else {
+                        clearEntityLayers();
                     }
                 })
                 .catch(err => {

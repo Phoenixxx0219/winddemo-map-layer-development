@@ -34,7 +34,7 @@
 } */
 
 .control-button.selected {
-    background-color: rgb(255, 252, 57); /* 选中时高亮 */
+    background-color: #eab308; /* 选中时高亮 */
 }
 
 .control-icon {
