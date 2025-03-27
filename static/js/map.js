@@ -267,7 +267,10 @@ function drawEntityOutline(current_spans_index) {
                 data.entities.forEach(entity => {
                     entity.spanData.forEach(span => {
                         if (span.index === currentIndex + 1 && span.outline.length > 0) {
+                            // 绘制轮廓
                             drawOutline(span.outline, entity.id);
+                            // 绘制箭头
+                            drawArrowWithImage(span.lat, span.lon, entity.direction, entity.speed, entity.id);
                         }
                     });
                 });
@@ -297,9 +300,46 @@ function drawOutline(outline, entityId) {
         dashArray: "5, 5"
     }).addTo(map);
 
-    // 绑定弹窗信息
-    polygon.bindPopup(`单体 ID: ${entityId}`);
     entityLayers.push(polygon);
+}
+
+// 根据角度计算方向文字
+function getDirectionFromDegree(degree) {
+    const directions = [
+        '正北', '东北', '正东', '东南',
+        '正南', '西南', '正西', '西北'
+    ];
+    const octants = Math.floor((degree + 22.5) / 45) % 8; // 将方位角划分为8个象限
+    return directions[octants];
+}
+
+// 绘制箭头
+function drawArrowWithImage(lat, lon, direction, speed, entityId) {
+    // 加载箭头图片作为图标
+    const arrowIcon = L.icon({
+        iconUrl: './data/arrow-up.svg', // 引用 SVG 图片路径
+        iconSize: [30, 30], // 图片大小
+        iconAnchor: [15, 15], // 图标中心点
+        popupAnchor: [0, -10] // 弹窗位置
+    });
+
+    // 计算旋转角度（方向以北为 0°，顺时针旋转）
+    const rotationAngle = direction;
+    const formattedSpeed = parseFloat(speed.toFixed(2)); // 速度保留 2 位小数
+    const directionText = getDirectionFromDegree(rotationAngle); // 获取方向文字
+
+    // 创建一个 marker 并旋转
+    const arrowMarker = L.marker([lat, lon], {
+        icon: arrowIcon,
+        rotationAngle: rotationAngle, // 旋转角度
+        rotationOrigin: 'center center' // 旋转中心
+    }).addTo(map);
+
+    // 绑定弹窗信息
+    arrowMarker.bindPopup(`单体 ID: ${entityId}<br>方向: ${directionText}<br>速度: ${formattedSpeed}km/h`);
+
+    // 添加到图层数组
+    entityLayers.push(arrowMarker);
 }
 
 
