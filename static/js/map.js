@@ -194,6 +194,8 @@ function changeMaps() {
     // });
 }
 
+// ----------------- 图例绘制相关逻辑 -----------------
+
 // 获取图例父容器
 const legendWrapper = document.getElementById('color-legend');
 // 获取图例容器
@@ -241,6 +243,8 @@ function createLegend(token) {
     legendContainer.appendChild(labelCol);
 }
 
+
+// ----------------- 单体追踪相关逻辑 -----------------
 
 // 存储单体轮廓图层
 let entityLayers = [];
@@ -336,10 +340,107 @@ function drawArrowWithImage(lat, lon, direction, speed, entityId) {
     }).addTo(map);
 
     // 绑定弹窗信息
-    arrowMarker.bindPopup(`单体 ID: ${entityId}<br>方向: ${directionText}<br>速度: ${formattedSpeed}km/h`);
+    arrowMarker.bindPopup(`编号: ${entityId}<br>方向: ${directionText}<br>速度: ${formattedSpeed}km/h`);
 
     // 添加到图层数组
     entityLayers.push(arrowMarker);
+}
+
+
+// ----------------- 单点查询相关逻辑 -----------------
+
+// 用于存储当前查询标记
+let queryMarker = null;
+
+/**
+ * 启用单点查询模式：
+ * 监听地图点击事件，点击时添加红色标记并调用查询函数
+ */
+function enableMapQuery() {
+    console.log("进入单点查询模式");
+    map.on('click', handleMapQueryClick);
+}
+
+/**
+ * 退出单点查询模式：
+ * 移除地图点击事件监听，清除已添加的查询标记
+ */
+function disableMapQuery() {
+    console.log("退出单点查询模式");
+    map.off('click', handleMapQueryClick);
+    clearQueryMarker();
+}
+
+/**
+ * 地图点击事件处理函数
+ * @param {Object} e - Leaflet点击事件对象，包含 e.latlng
+ */
+function handleMapQueryClick(e) {
+    const { lat, lng } = e.latlng;
+
+    // 移除之前的查询标记
+    clearQueryMarker();
+
+    // 添加一个红色标记
+    queryMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: 'custom-query-marker',
+            html: '<div class="query-dot"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        })
+    }).addTo(map);
+
+    console.log(`单点查询点击坐标：纬度 ${lat}, 经度 ${lng}`);
+
+    // 调用查询函数，并绑定查询结果到 popup
+    queryPointInfo(lat, lng, queryMarker);
+}
+
+/**
+ * 清除当前查询标记
+ */
+function clearQueryMarker() {
+    if (queryMarker) {
+        map.removeLayer(queryMarker);
+        queryMarker = null;
+    }
+}
+
+/**
+ * 查询指定坐标的信息，并将结果显示在 marker 的 popup 上
+ * @param {number} lat - 纬度
+ * @param {number} lng - 经度
+ * @param {Object} marker - 已添加到地图上的 marker 对象
+ */
+function queryPointInfo(lat, lng, marker) {
+    console.log(`开始查询点信息：纬度=${lat}, 经度=${lng}`);
+
+    // 模拟查询数据，这里可以换成实际的 AJAX 请求
+    // 模拟数据：查询信息为字符串
+    const queryResult = `查询坐标：${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+    // 绑定 popup 到 marker，并打开
+    marker.bindPopup(queryResult).openPopup();
+
+    // 如果需要通过 AJAX 获取数据，可以如下：
+    /*
+    fetch(`./data/query.json?lat=${lat}&lon=${lng}`)
+        .then(response => response.json())
+        .then(data => {
+            let info;
+            if (data && data.info) {
+                info = `查询成功！\n信息：${data.info}`;
+            } else {
+                info = "未找到相关信息。";
+            }
+            marker.bindPopup(info).openPopup();
+        })
+        .catch(error => {
+            console.error("查询失败：", error);
+            marker.bindPopup("查询失败，请检查网络或数据。").openPopup();
+        });
+    */
 }
 
 

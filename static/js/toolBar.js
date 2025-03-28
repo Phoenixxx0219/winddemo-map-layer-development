@@ -3,12 +3,14 @@ let activeButton = null;
 
 // 处理按钮选中状态
 function selectButton(button) {
+    clearEntityLayers();    // 取消追踪
+    disableMapQuery();      // 取消查询
+
     // 如果当前点击的按钮已被选中，则取消选中状态
     if (button.classList.contains("selected")) {
         button.classList.remove("selected");
         console.log(`取消选中：${button.getAttribute("data-function")}`);
         activeButton = null; // 清空选中的按钮
-        clearEntityLayers(); // 取消追踪
         return;
     }
 
@@ -20,8 +22,8 @@ function selectButton(button) {
     // 给点击的按钮添加 selected 类
     button.classList.add("selected");
 
-    // ✅ 记录当前选中的按钮功能
-    activeButton = button.getAttribute("data-function"); // 例如 'track', 'measure', 'clean'
+    // 记录当前选中的按钮功能
+    activeButton = button.getAttribute("data-function");
     console.log(`当前选中的功能：${activeButton}`);
 
     if (activeButton == TOOLBAR_STATUS.TRACK) {
@@ -29,9 +31,8 @@ function selectButton(button) {
         span_item_active = document.querySelector('.span__item--active');
         current_spans_index = span_item_active.getAttribute('data-index')
         drawEntityOutline(current_spans_index);
-    } else {
-        // 取消追踪
-        clearEntityLayers();
+    } else if (activeButton == TOOLBAR_STATUS.QUERY) {
+        enableMapQuery();
     }
 }
 
@@ -41,9 +42,9 @@ function enableTrack() {
     selectButton(event.currentTarget);
 }
 
-// 启用测量方向和速度
-function enableMeasure() {
-    console.log("测量方向和速度功能启用");
+// 单点查询
+function enableQuery() {
+    console.log("单点查询功能启用");
     selectButton(event.currentTarget);
 }
 

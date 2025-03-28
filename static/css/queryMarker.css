@@ -1,0 +1,9 @@
+/* 自定义红点标记样式 */
+.custom-query-marker .query-dot {
+    width: 12px;
+    height: 12px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+}

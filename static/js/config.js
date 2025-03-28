@@ -163,7 +163,7 @@ const LEGEND_UNIT = {
 // 工具栏状态
 const TOOLBAR_STATUS = {
     "TRACK": "track",
-    "MEASURE": "measure",
+    "QUERY": "query",
     "CLEAN": "clean"
 }
 
