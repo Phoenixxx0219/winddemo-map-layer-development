@@ -1,0 +1,48 @@
+.time-picker-container {
+    position: fixed;
+    bottom: 65px; /* 比 spans-menu 的 bottom 大，确保在其上方 */
+    right: 10px;  /* 与 spans-menu 对齐到右侧 */
+    z-index: 9999; /* 让其盖过大部分元素 */
+    background: rgba(255, 255, 255, 0.4);
+    padding: 10px;
+    border-radius: 0px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+
+/* 日期选择和时间下拉框的样式 */
+.datetime-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 设置日期输入和下拉框的样式 */
+#date-picker {
+    width: 100px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+#time-picker {
+    width: 80px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+/* 调整整个日历容器的宽度 */
+.flatpickr-calendar {
+    width: auto;
+    height: auto;
+    zoom: 0.9;
+    margin-top: 50px;
+}
+
+/* 调整日历内文字的字体大小 */
+.flatpickr-calendar, 
+.flatpickr-day, 
+.flatpickr-month 
+.flatpickr-weekday {
+    font-size: 12px;
+}

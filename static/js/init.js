@@ -270,6 +270,52 @@ initLeftMenu();
     }
 }
 
+// 页面加载后初始化日期选择器和时间下拉框
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 Flatpickr 只用于选择日期，不启用时间选择
+    flatpickr("#date-picker", {
+        locale: "zh",
+        dateFormat: "Y-m-d"
+    });
+
+    // 动态生成时间下拉框选项，时间以 6 分钟为间隔
+    const timeSelect = document.getElementById('time-picker');
+    for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 6) {
+            const hourStr = hour < 10 ? '0' + hour : hour;
+            const minuteStr = minute < 10 ? '0' + minute : minute;
+            const option = document.createElement('option');
+            option.value = `${hourStr}:${minuteStr}`;
+            option.textContent = `${hourStr}:${minuteStr}`;
+            timeSelect.appendChild(option);
+        }
+    }
+});
+
+// 处理确定按钮的点击事件，组合日期和时间，并转换成时间戳
+function handleDateTimeSelection() {
+    const dateInput = document.getElementById('date-picker').value;
+    const timeInput = document.getElementById('time-picker').value;
+    if (dateInput && timeInput) {
+        // 拼接日期和时间字符串，例如 "2025-03-29 14:05"
+        const dateTimeStr = `${dateInput} ${timeInput}`;
+        const selectedTime = new Date(dateTimeStr).getTime();
+        console.log("用户选择的日期时间为：" + dateTimeStr);
+        console.log("转换后的时间戳为：" + selectedTime);
+        // 调用更新地图数据或其他逻辑的函数
+        updateMapDataByTime(selectedTime);
+    } else {
+        alert("请选择有效的日期和时间！");
+    }
+}
+
+// 示例：根据选择的时间更新地图数据的函数
+function updateMapDataByTime(timestamp) {
+    console.log("更新地图数据，选择的时间戳为：" + timestamp);
+    // 在这里添加地图数据更新逻辑
+}
+
+
 /*******************************
  * info:        左侧菜单的隐藏与显示事件
  *******************************/

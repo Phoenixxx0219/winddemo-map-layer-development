@@ -1,5 +1,3 @@
-<!-- 修改后的index.html文件 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,13 +20,16 @@
     <link rel="stylesheet" href="./static/css/spanMenu.css"/>
     <!-- 地图图例样式 -->
     <link rel="stylesheet" href="./static/css/mapLegend.css"/>
+    <!-- 日期选择样式 -->
+    <link rel="stylesheet" href="./static/css/datetimePicker.css"/>
     <!-- 单点查询单点样式 -->
     <link rel="stylesheet" href="./static/css/queryMarker.css"/>
     <!-- Leaflet 插件 blinkmarker 的样式 -->
     <link rel="stylesheet" href="./static/components/leaflet/blinkmarker.css">
-
     <!-- Leaflet 地图库的核心CSS -->
     <link rel="stylesheet" href="./static/components/leaflet/leaflet.css"/>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- 引入 Leaflet 地图库的JavaScript -->
     <script src="./static/components/leaflet/leaflet.js"></script>
@@ -42,6 +43,9 @@
     <script src="./static/components/backbone/backbone-min.js"></script>
     <!-- Leaflet blinkmarker 插件，用于地图上显示闪烁标记 -->
     <script src="./static/components/leaflet/blinkmarker.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
 
     <!-- Tapeli 相关的CSS文件，可能用于页面某部分的样式（比如按钮、图标等） -->
     <link href="./static/components/tapeli/assets/css/app.css" rel="stylesheet" type="text/css" id="app-style"/>
@@ -105,6 +109,17 @@
 <div id="map" class="map-container"></div>
 <!-- 地图 END -->
 
+<!-- 右下角时间选择器容器 -->
+<div class="time-picker-container">
+    <div class="datetime-picker-container">
+        <!-- 修改后的日期选择器（仅选择日期） -->
+        <input type="text" id="date-picker" placeholder="选择日期">
+        <!-- 修改后的时间下拉框（选择时间） -->
+        <select id="time-picker"></select>
+        <button onclick="handleDateTimeSelection()">确定</button>
+    </div>
+</div>
+
 <!-- 右下角工具栏 START -->
 <nav class="spans-menu">
     <!-- SPAN方块 START -->
@@ -152,9 +167,6 @@
 <script src="./static/js/map.js"></script> <!-- 处理地图交互 -->
 <script src="./static/js/toolBar.js"></script> <!-- 工具栏交互 -->
 <script src="./static/js/init.js"></script> <!-- 页面初始化 -->
-
-<!-- JS 底部弹出信息 梁嘉俊PART-->
-<!-- <script src="static/js/bottomPopupDiv.js"></script> -->
 
 <script src="./static/components/tapeli/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 组件支持 -->
 <script src="./static/components/tapeli/assets/js/app.js"></script> <!-- 主要的应用逻辑 -->
