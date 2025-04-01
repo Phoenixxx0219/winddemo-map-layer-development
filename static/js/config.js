@@ -207,11 +207,11 @@ const SPAN_SUBMENU_DICT = {
 }
 
 // 地址信息
-const RADAR_PRED_BASE_PATH = './data/radar/'
-const RADAR_REAL_BASE_PATH = './data/radar/radar_color_png/'
-const RAIN_PRED_BASE_PATH = './data/rain/rain/multi_rain_color_png/'
-const RAIN_REAL_BASE_PATH = './data/rain/rain/multi_rain_color_png/real_color_png/'
-const RAIN_BASE_PATH = './data/rain/rain/multi_rain_color_png/'
+const RADAR_PRED_BASE_PATH = './static/data/radar/'
+const RADAR_REAL_BASE_PATH = './static/data/radar/radar_color_png/'
+const RAIN_PRED_BASE_PATH = './static/data/rain/rain/multi_rain_color_png/'
+const RAIN_REAL_BASE_PATH = '.static/data/rain/rain/multi_rain_color_png/real_color_png/'
+const RAIN_BASE_PATH = './static/data/rain/rain/multi_rain_color_png/'
 
 // 菜单信息
 // 注意每个MODELS数组长度在1-4之间，如果大于4则系统只读取前四个，少于1个系统会报错

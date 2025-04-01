@@ -1,5 +1,8 @@
 # APP原型
 
+启动前端：
+http-server .
+
 ![demo](./static/img/img1.png)
 
 ![demo](./static/img/img2.png)

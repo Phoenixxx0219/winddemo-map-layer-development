@@ -107,7 +107,7 @@ function changeMaps() {
                 createLegend(tokenValue);
             }
             // 构造雷达图像路径
-            const imageUrl = `./data/radar/${formattedRequestTime}.png`;
+            const imageUrl = `./static/data/radar/${formattedRequestTime}.png`;
             changeRadarLayer(imageUrl);
 
             // **返回时间信息**
@@ -253,7 +253,7 @@ let entityLayers = [];
 function drawEntityOutline(current_spans_index) {
     if(currentToken == "RADAR" ) {
         // 加载 JSON 文件
-        fetch("./data/test.json") // JSON 文件路径
+        fetch("./static/data/test.json") // JSON 文件路径
             .then(response => response.json())
             .then(data => {
                 // 清除之前的图层
@@ -321,7 +321,7 @@ function getDirectionFromDegree(degree) {
 function drawArrowWithImage(lat, lon, direction, speed, entityId) {
     // 加载箭头图片作为图标
     const arrowIcon = L.icon({
-        iconUrl: './data/arrow-up.svg', // 引用 SVG 图片路径
+        iconUrl: './static/data/arrow-up.svg', // 引用 SVG 图片路径
         iconSize: [30, 30], // 图片大小
         iconAnchor: [15, 15], // 图标中心点
         popupAnchor: [0, -10] // 弹窗位置
@@ -441,6 +441,13 @@ function queryPointInfo(lat, lng, marker) {
             marker.bindPopup("查询失败，请检查网络或数据。").openPopup();
         });
     */
+}
+
+
+// 示例：根据选择的时间更新地图数据的函数
+function updateMapDataByTime(timestamp) {
+    console.log("更新地图数据，选择的时间戳为：" + timestamp);
+    // 在这里添加地图数据更新逻辑
 }
 
 

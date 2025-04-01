@@ -28,8 +28,10 @@
     <link rel="stylesheet" href="./static/components/leaflet/blinkmarker.css">
     <!-- Leaflet 地图库的核心CSS -->
     <link rel="stylesheet" href="./static/components/leaflet/leaflet.css"/>
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="./static/components/select2/select2.min.css" />
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="./static/components/jquery/jquery-ui.css">
 
     <!-- 引入 Leaflet 地图库的JavaScript -->
     <script src="./static/components/leaflet/leaflet.js"></script>
@@ -43,9 +45,10 @@
     <script src="./static/components/backbone/backbone-min.js"></script>
     <!-- Leaflet blinkmarker 插件，用于地图上显示闪烁标记 -->
     <script src="./static/components/leaflet/blinkmarker.js"></script>
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+    <!-- Select2 -->
+    <script src="./static/components/select2/select2.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="./static/components/jquery/jquery-ui.js"></script>
 
     <!-- Tapeli 相关的CSS文件，可能用于页面某部分的样式（比如按钮、图标等） -->
     <link href="./static/components/tapeli/assets/css/app.css" rel="stylesheet" type="text/css" id="app-style"/>
@@ -113,8 +116,8 @@
 <div class="time-picker-container">
     <div class="datetime-picker-container">
         <!-- 修改后的日期选择器（仅选择日期） -->
-        <input type="text" id="date-picker" placeholder="选择日期">
-        <!-- 修改后的时间下拉框（选择时间） -->
+        <input type="text" id="date-picker" placeholder="选择日期" readonly>
+        <!-- 自定义下拉框 -->
         <select id="time-picker"></select>
         <button onclick="handleDateTimeSelection()">确定</button>
     </div>

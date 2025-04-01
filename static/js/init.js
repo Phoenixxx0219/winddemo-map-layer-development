@@ -272,25 +272,61 @@ initLeftMenu();
 
 // 页面加载后初始化日期选择器和时间下拉框
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化 Flatpickr 只用于选择日期，不启用时间选择
-    flatpickr("#date-picker", {
-        locale: "zh",
-        dateFormat: "Y-m-d"
+    // 使用 jQuery UI 初始化日期选择器
+    $("#date-picker").datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        maxDate: 0, // 限制只能选择今天及之前的日期
+        onSelect: function() {
+            updateTimeOptions(); // 当用户选择日期时更新时间选项
+        }
     });
 
-    // 动态生成时间下拉框选项，时间以 6 分钟为间隔
-    const timeSelect = document.getElementById('time-picker');
+    // 生成时间选项（6分钟间隔）
+    updateTimeOptions();
+
+    // 初始化 Select2 时间选择下拉框
+    timeSelect.select2({
+        width: '80px',
+        minimumResultsForSearch: Infinity // 禁用搜索框
+    });
+});
+
+// 生成时间选项，并在今天时禁用未来时间
+function updateTimeOptions() {
+    const timeSelect = $('#time-picker');
+    const selectedDate = $("#date-picker").val();
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0]; // 获取今天的 YYYY-MM-DD
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    let optionsHTML = "";
     for (let hour = 0; hour < 24; hour++) {
         for (let minute = 0; minute < 60; minute += 6) {
             const hourStr = hour < 10 ? '0' + hour : hour;
             const minuteStr = minute < 10 ? '0' + minute : minute;
-            const option = document.createElement('option');
-            option.value = `${hourStr}:${minuteStr}`;
-            option.textContent = `${hourStr}:${minuteStr}`;
-            timeSelect.appendChild(option);
+            const timeValue = `${hourStr}:${minuteStr}`;
+
+            // 如果用户选择的是今天，则禁用当前时间之后的选项
+            if (selectedDate === todayStr && (hour > currentHour || (hour === currentHour && minute > currentMinute))) {
+                optionsHTML += `<option value="${timeValue}" disabled>${timeValue}</option>`;
+            } else {
+                optionsHTML += `<option value="${timeValue}">${timeValue}</option>`;
+            }
         }
     }
-});
+
+    timeSelect.html(optionsHTML);
+
+    // 重新初始化 Select2，防止样式失效
+    timeSelect.select2({
+        width: '80px',
+        minimumResultsForSearch: Infinity
+    });
+}
 
 // 处理确定按钮的点击事件，组合日期和时间，并转换成时间戳
 function handleDateTimeSelection() {
@@ -307,12 +343,6 @@ function handleDateTimeSelection() {
     } else {
         alert("请选择有效的日期和时间！");
     }
-}
-
-// 示例：根据选择的时间更新地图数据的函数
-function updateMapDataByTime(timestamp) {
-    console.log("更新地图数据，选择的时间戳为：" + timestamp);
-    // 在这里添加地图数据更新逻辑
 }
 
 
