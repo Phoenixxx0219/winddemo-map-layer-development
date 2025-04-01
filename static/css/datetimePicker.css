@@ -53,9 +53,9 @@
 
 /* 调整按钮样式 */
 button {
-    height: 32px;
+    height: 30px;
     padding: 5px 10px;
-    background: #007bff;
+    background: rgba(30, 86, 163, 1);
     color: white;
     border: none;
     border-radius: 5px;
@@ -64,5 +64,5 @@ button {
 }
 
 button:hover {
-    background: #0056b3;
+    background: rgb(26, 74, 142);
 }
