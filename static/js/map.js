@@ -58,7 +58,7 @@ function changeRadarLayer(imageUrl) {
     }
 }
 
-
+let requestTimeStr = null;
 function changeMaps() {
     return new Promise((resolve, reject) => {
         try {
@@ -84,7 +84,7 @@ function changeMaps() {
             console.log("current_spans_index:", current_spans_index);
 
             // 请求时间默认为 202406040800（北京时间）
-            const dateStr = "202406040800";
+            const dateStr = requestTimeStr;
             const year = dateStr.substring(0, 4);
             const month = dateStr.substring(4, 6) - 1; // 月份从 0 开始
             const day = dateStr.substring(6, 8);
@@ -94,6 +94,8 @@ function changeMaps() {
             const currentTime = new Date(year, month, day, hours, minutes);
             const requestTime = new Date(currentTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
             const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
+
+            const datePart = formattedRequestTime.substring(0, 8);
 
             currentToken = tokenValue;
             console.log('当前已点击新的菜单：', tokenValue,
@@ -107,7 +109,8 @@ function changeMaps() {
                 createLegend(tokenValue);
             }
             // 构造雷达图像路径
-            const imageUrl = `./static/data/radar/${formattedRequestTime}.png`;
+            const preUrl = "http://10.249.46.209:8080/ImageData";
+            const imageUrl = `${preUrl}/${datePart}/12/real/${formattedRequestTime}.png`;
             changeRadarLayer(imageUrl);
 
             // **返回时间信息**
@@ -116,82 +119,6 @@ function changeMaps() {
             reject(error);
         }
     });
-
-    // 构造后端请求的 URL 和请求参数
-    // let url = 'http://10.249.46.209:8080/ImageData/';
-    // let requestData = {
-    //     startTime: formattedRequestTime,
-    //     endTime: formattedRequestTime,
-    //     interval: menuItem_INTERVAL,
-    //     type: 0 // 默认值
-    // };
-
-    // const typeMap = {
-    //     'RADAR': 10,
-    //     'SATELLITE': 8,
-    //     'RAIN': 3,
-    //     'WIND': 2,
-    //     'TEMP': 1,
-    //     'PRESSURE': 0
-    // };
-
-    // if (typeMap.hasOwnProperty(tokenValue)) {
-    //     requestData.type = typeMap[tokenValue];
-    // }
-
-    // 发送 HTTP 请求获取数据
-    // return new Promise((resolve, reject) => {
-    //     $.ajax({
-    //         url: url,
-    //         type: 'POST',
-    //         contentType: 'application/json',
-    //         data: JSON.stringify(requestData),
-    //         success: function (response) {
-    //             if (response.code === 200 && response.data && response.data.length > 0) {
-    //                 const responseTime = response.data[0].time;
-    //                 const updateTime = response.data[0].updateTime;
-    //                 const data = response.data[0].dataJson;
-
-    //                 // 若与上一次token值相同，则只需要更新data；反之，色标和data都需要更新
-    //                 if(tokenValue == lastToken) {
-    //                     if (currentScalarLayer) {
-    //                         currentScalarLayer.setData(data);
-    //                     } else {
-    //                         addScalarLayer(tokenValue, data);
-    //                     }
-    //                 } else {
-    //                     updateLegend(tokenValue);   // 更新色标
-    //                     removeScalarLayer();
-    //                     addScalarLayer(tokenValue, data);
-    //                 }
-    //                 // 若为WIND，则需要添加风场粒子，只需要更新data；反之，移除风场粒子图层
-    //                 if (tokenValue === 'WIND') {
-    //                     if (currentWindLayer) {
-    //                         currentWindLayer.setData(data);
-    //                     } else {
-    //                         addWindLayer(data);
-    //                     }
-    //                 } else {
-    //                     removeWindLayer();
-    //                 }
-
-    //                 console.log('图层加载成功:', tokenValue);
-    //                 lastToken = tokenValue;     //更新token值
-    //                 const returnTime = convertUTCToBeijingTime(responseTime);   // 将UTC时间转换为北京时间并返回
-    //                 resolve(returnTime);
-    //             } else {
-    //                 lastToken = tokenValue;
-    //                 console.error('数据请求失败或数据为空:', response.message);
-    //                 reject('数据为空');
-    //             }
-    //         },
-    //         error: function (err) {
-    //             lastToken = tokenValue;
-    //             console.error('请求失败:', err);
-    //             reject(err);
-    //         }
-    //     });
-    // });
 }
 
 // ----------------- 图例绘制相关逻辑 -----------------
@@ -444,11 +371,34 @@ function queryPointInfo(lat, lng, marker) {
 }
 
 
-// 示例：根据选择的时间更新地图数据的函数
-function updateMapDataByTime(timestamp) {
-    console.log("更新地图数据，选择的时间戳为：" + timestamp);
-    // 在这里添加地图数据更新逻辑
+// 根据选择的时间更新地图数据的函数
+function updateMapDataByTime(dateTimeStr) {
+    console.log("更新地图数据，选择的时间为：" + dateTimeStr);
+    requestTimeStr = convertTimetoStr(dateTimeStr);
 }
+
+// 时间格式转换
+function convertTimetoStr(dateTimeStr) {
+    const dateTime = new Date(dateTimeStr);
+    const year = dateTime.getFullYear();
+    const month = String(dateTime.getMonth() + 1).padStart(2, '0');
+    const day = String(dateTime.getDate()).padStart(2, '0');
+    const hours = String(dateTime.getHours()).padStart(2, '0');
+    const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+    return `${year}${month}${day}${hours}${minutes}`;
+}
+
+// 北京时间转换UTC为时间
+// function convertBeijingToUTCTime(beijingTimeString) {
+//     const bejingDate = new Date(beijingTimeString);
+//     const utcTime = new Date(bejingDate.getTime() - 8 * 60 * 60 * 1000);
+//     const year = utcTime.getFullYear();
+//     const month = String(utcTime.getMonth() + 1).padStart(2, '0');
+//     const day = String(utcTime.getDate()).padStart(2, '0');
+//     const hours = String(utcTime.getHours()).padStart(2, '0');
+//     const minutes = String(utcTime.getMinutes()).padStart(2, '0');
+//     return `${year}${month}${day}${hours}${minutes}`;
+// }
 
 
 // // UTC时间转换为北京时间

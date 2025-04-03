@@ -354,11 +354,36 @@ function handleDateTimeSelection() {
     if (dateInput && timeInput) {
         // 拼接日期和时间字符串，例如 "2025-03-29 14:05"
         const dateTimeStr = `${dateInput} ${timeInput}`;
-        const selectedTime = new Date(dateTimeStr).getTime();
         console.log("用户选择的日期时间为：" + dateTimeStr);
-        console.log("转换后的时间戳为：" + selectedTime);
-        // 调用更新地图数据或其他逻辑的函数
-        updateMapDataByTime(selectedTime);
+        // 调用更新地图数据
+        updateMapDataByTime(dateTimeStr);
+        // 调用 changeMaps() 更新图层，并在回调中更新 span 中的文字
+        changeMaps()
+            .then(formattedRequestTime => {
+                // 格式化时间：例如将 202406040800 转换为 “06.04 08:00”
+                const year = formattedRequestTime.slice(0, 4);
+                const month = formattedRequestTime.slice(4, 6);
+                const day = formattedRequestTime.slice(6, 8);
+                const hour = formattedRequestTime.slice(8, 10);
+                const minute = formattedRequestTime.slice(10, 12);
+                const formattedTime = `${month}.${day} ${hour}:${minute}`;
+
+                // 获取当前激活的 span 的 p 标签，并更新其文字
+                const activeSpan = document.querySelector('.span__item--active');
+                const pTag = activeSpan.querySelector('p');
+                pTag.innerHTML = formattedTime;
+                pTag.classList.add('p-text-show');
+
+                // 在图层切换后绘制单体轮廓
+                if (getActiveButton() == TOOLBAR_STATUS.TRACK) {
+                    drawEntityOutline(current_spans_index);
+                } else {
+                    clearEntityLayers();
+                }
+            })
+            .catch(err => {
+                console.error('更新地图数据或处理时间出错:', err);
+            });
     } else {
         alert("请选择有效的日期和时间！");
     }
