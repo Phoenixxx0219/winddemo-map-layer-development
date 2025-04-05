@@ -3,7 +3,7 @@ var is_playing = false; //默认播放状态，在播放的一系列案件中
 var span_items, span_item_active; //span对象，在initSpans被重新赋初始值
 
 /*******************************
- * function:    initLeftMenu
+ * function:    initDataMenu
  * info:        初始化左侧按钮：
  *              ① 清空左侧菜单div(id:left-menu)所有子元素
  *              ② 根据 菜单(MENUS) 循环创建 菜单项(CardItems)
@@ -11,8 +11,8 @@ var span_items, span_item_active; //span对象，在initSpans被重新赋初始�
  *              ④ 主动执行一次initSubMenu()，这是因为初始化左侧菜单之后一定要初始化子项
  * invoked:     主动执行
  *******************************/
-function initLeftMenu() {
-    // console.log("initLeftMenu");
+function initDataMenu() {
+    // console.log("initDataMenu");
     let leftMenu = document.getElementById('x-data-menu')
 
     // ① 清空菜单(MENUS)所有子元素
@@ -187,7 +187,7 @@ function initSpans() {
 
 }
 
-initLeftMenu();
+initDataMenu();
 
 /*******************************
  * info:        所有与播放、暂停、向前划看、向后划看、定时播放的逻辑，必须放在init组件之后执行，保证span_items不为空

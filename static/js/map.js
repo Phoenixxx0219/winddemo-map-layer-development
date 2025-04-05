@@ -1,4 +1,5 @@
-// 初始化地图
+// ----------------- 地图初始化相关逻辑 -----------------
+
 var map = L.map("map", {
     center: TILE_MAP.mapCenter,
     zoom: TILE_MAP.zoom,
@@ -37,9 +38,12 @@ var tiandituLabel = L.tileLayer(
     }
 ).addTo(map);
 
-let currentRadarLayer = null;
+
+// ----------------- 雷达卫星图层相关逻辑 -----------------
+
 let lastToken = null;
 let currentToken = null;
+let currentRadarLayer = null;
 
 // 雷达图层
 function RadarLayer(imageUrl) {
@@ -48,7 +52,7 @@ function RadarLayer(imageUrl) {
     });
 }
 
-// 切换图层
+// 切换雷达图层
 function changeRadarLayer(imageUrl) {
     if (currentRadarLayer) {
         currentRadarLayer.setUrl(imageUrl); // 更新图像URL
@@ -58,7 +62,8 @@ function changeRadarLayer(imageUrl) {
     }
 }
 
-let requestTimeStr = null;
+// 请求时间默认为 202411201200（北京时间）
+let realTimeStr = "202411201200";
 function changeMaps() {
     return new Promise((resolve, reject) => {
         try {
@@ -83,18 +88,20 @@ function changeMaps() {
             console.log("timeOffset:", timeOffset);
             console.log("current_spans_index:", current_spans_index);
 
-            // 请求时间默认为 202406040800（北京时间）
-            const dateStr = requestTimeStr;
-            const year = dateStr.substring(0, 4);
-            const month = dateStr.substring(4, 6) - 1; // 月份从 0 开始
-            const day = dateStr.substring(6, 8);
-            const hours = dateStr.substring(8, 10);
-            const minutes = dateStr.substring(10, 12);
-
-            const currentTime = new Date(year, month, day, hours, minutes);
-            const requestTime = new Date(currentTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
+            const year = parseInt(realTimeStr.substring(0, 4));
+            const month = parseInt(realTimeStr.substring(4, 6));
+            const day = parseInt(realTimeStr.substring(6, 8));
+            const hours = parseInt(realTimeStr.substring(8, 10));
+            const minutes = parseInt(realTimeStr.substring(10, 12));
+            const beijingTime = new Date(year, month - 1, day, hours, minutes);
+            console.log("转换后的北京时间:", beijingTime.toString());
+            // 真实时间对应的utc字符串
+            const utcTimeStr = formatDateToUTCString(beijingTime);
+            console.log("转换后的 UTC 时间字符串:", utcTimeStr);
+            const timePart = utcTimeStr.substring(8, 10) + "-" + utcTimeStr.substring(10, 12);
+            // 真实请求时间
+            const requestTime = new Date(beijingTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
             const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
-
             const datePart = formattedRequestTime.substring(0, 8);
 
             currentToken = tokenValue;
@@ -108,10 +115,22 @@ function changeMaps() {
             if(lastToken != tokenValue) {
                 createLegend(tokenValue);
             }
-            // 构造雷达图像路径
-            const preUrl = "http://10.249.46.209:8080/ImageData";
-            const imageUrl = `${preUrl}/${datePart}/12/real/${formattedRequestTime}.png`;
-            changeRadarLayer(imageUrl);
+
+            const preUrl = "http://localhost:8080";
+            if(tokenValue == "RADAR") {
+                // 构造雷达图像路径
+                if(spanValue < menuItem_SPANS_ACTUAL_VALUE_NUMBER) {
+                    const imageUrl = `${preUrl}/realimage/${datePart}/12/real/${formattedRequestTime}.png`;
+                    changeRadarLayer(imageUrl);
+                } else {
+                    const imageUrl = `${preUrl}/forcastimage/${datePart}/12/forcast/${timePart}/${formattedRequestTime}.png`;
+                    changeRadarLayer(imageUrl);
+                }    
+            } else if(tokenValue == "SATELLITE") {
+                // 构造卫星图像路径
+                const imageUrl = `${preUrl}/realimage/${datePart}/12/real/${formattedRequestTime}.png`;
+                changeRadarLayer(imageUrl);
+            }
 
             // **返回时间信息**
             resolve(formattedRequestTime);
@@ -374,7 +393,21 @@ function queryPointInfo(lat, lng, marker) {
 // 根据选择的时间更新地图数据的函数
 function updateMapDataByTime(dateTimeStr) {
     console.log("更新地图数据，选择的时间为：" + dateTimeStr);
-    requestTimeStr = convertTimetoStr(dateTimeStr);
+    realTimeStr = convertTimetoStr(dateTimeStr);
+}
+
+
+// ----------------- tool函数 -----------------
+
+// date转换为str
+function formatDateToUTCString(date) {
+    const pad = (n) => n.toString().padStart(2, "0");
+    const y = date.getUTCFullYear();
+    const m = pad(date.getUTCMonth() + 1);
+    const d = pad(date.getUTCDate());
+    const h = pad(date.getUTCHours());
+    const min = pad(date.getUTCMinutes());
+    return `${y}${m}${d}${h}${min}`;
 }
 
 // 时间格式转换
@@ -387,6 +420,7 @@ function convertTimetoStr(dateTimeStr) {
     const minutes = String(dateTime.getMinutes()).padStart(2, '0');
     return `${year}${month}${day}${hours}${minutes}`;
 }
+
 
 // 北京时间转换UTC为时间
 // function convertBeijingToUTCTime(beijingTimeString) {
