@@ -64,6 +64,8 @@ function changeRadarLayer(imageUrl) {
 
 // 请求时间默认为 202411201200（北京时间）
 let realTimeStr = "202411201200";
+let utcRealTime = "2024-11-20 04:00";
+
 function changeMaps() {
     return new Promise((resolve, reject) => {
         try {
@@ -97,7 +99,8 @@ function changeMaps() {
             console.log("转换后的北京时间:", beijingTime.toString());
             // 真实时间对应的utc字符串
             const utcTimeStr = formatDateToUTCString(beijingTime);
-            console.log("转换后的 UTC 时间字符串:", utcTimeStr);
+            utcRealTime = formatToUTCDateTimeString(beijingTime);
+            console.log("转换后的 UTC 时间字符串:", utcTimeStr, utcRealTime);
             const timePart = utcTimeStr.substring(8, 10) + "-" + utcTimeStr.substring(10, 12);
             // 真实请求时间
             const requestTime = new Date(beijingTime.getTime() + timeOffset * menuItem_INTERVAL * 60 * 1000);
@@ -194,38 +197,56 @@ function createLegend(token) {
 
 // 存储单体轮廓图层
 let entityLayers = [];
+let entityData = null;
+
+// 获取单体轮廓数据
+function getEntityData() {
+    if(currentToken == "RADAR" ) {
+        // 构造请求参数
+        const requestData = {
+            time: utcRealTime,
+            algorithm: "forcast",
+            interval: "6"
+        };
+
+        fetch("http://localhost:8080/api/convective/tracking", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.code === 200) {
+                entityData = result.data;
+                console.log("获取数据成功:", entityData);
+            } else {
+                console.error("请求错误:", result.message);
+            }
+        })
+        .catch(error => {
+            console.error("请求异常:", error);
+        });
+    }
+}
 
 // 绘制单体轮廓
 function drawEntityOutline(current_spans_index) {
-    if(currentToken == "RADAR" ) {
-        // 加载 JSON 文件
-        fetch("./static/data/test.json") // JSON 文件路径
-            .then(response => response.json())
-            .then(data => {
-                // 清除之前的图层
-                clearEntityLayers();
-
-                // 查询当前滑块的索引
-                const activeSpan = document.querySelector(".span__item--active");
-                if (!activeSpan) {
-                    console.warn("未找到滑块，无法绘制轮廓");
-                    return;
+    if (currentToken == "RADAR" && entityData && entityData.entities) {
+        // 清除之前的图层
+        clearEntityLayers();
+        // 遍历所有单体，绘制符合条件的轮廓
+        entityData.entities.forEach(entity => {
+            entity.spanData.forEach(span => {
+                if (parseInt(span.index) === parseInt(current_spans_index) + 1 && span.outline && span.outline.length > 0) {
+                    // 绘制轮廓
+                    drawOutline(span.outline, entity.id);
+                    // 绘制箭头
+                    drawArrowWithImage(span.lat, span.lon, entity.direction, entity.speed, entity.id);
                 }
-                const currentIndex = parseInt(activeSpan.getAttribute("data-index"));
-
-                // 遍历所有单体，绘制符合条件的轮廓
-                data.entities.forEach(entity => {
-                    entity.spanData.forEach(span => {
-                        if (span.index === currentIndex + 1 && span.outline.length > 0) {
-                            // 绘制轮廓
-                            drawOutline(span.outline, entity.id);
-                            // 绘制箭头
-                            drawArrowWithImage(span.lat, span.lon, entity.direction, entity.speed, entity.id);
-                        }
-                    });
-                });
-            })
-            .catch(error => console.error("加载 JSON 文件失败:", error));
+            });
+        });
     }
     else {
         // 清除之前的图层
@@ -267,7 +288,7 @@ function getDirectionFromDegree(degree) {
 function drawArrowWithImage(lat, lon, direction, speed, entityId) {
     // 加载箭头图片作为图标
     const arrowIcon = L.icon({
-        iconUrl: './static/data/arrow-up.svg', // 引用 SVG 图片路径
+        iconUrl: './static/img/icon/arrow-up.svg', // 引用 SVG 图片路径
         iconSize: [30, 30], // 图片大小
         iconAnchor: [15, 15], // 图标中心点
         popupAnchor: [0, -10] // 弹窗位置
@@ -408,6 +429,16 @@ function formatDateToUTCString(date) {
     const h = pad(date.getUTCHours());
     const min = pad(date.getUTCMinutes());
     return `${y}${m}${d}${h}${min}`;
+}
+
+function formatToUTCDateTimeString(date) {
+    const pad = (n) => n.toString().padStart(2, "0");
+    const y = date.getUTCFullYear();
+    const m = pad(date.getUTCMonth() + 1);
+    const d = pad(date.getUTCDate());
+    const h = pad(date.getUTCHours());
+    const min = pad(date.getUTCMinutes());
+    return `${y}-${m}-${d} ${h}:${min}`;
 }
 
 // 时间格式转换

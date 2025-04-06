@@ -311,6 +311,9 @@ document.addEventListener('DOMContentLoaded', function() {
         width: '80px',
         minimumResultsForSearch: Infinity // 禁用搜索框
     });
+
+    // 初始化完成后立即获取单体数据
+    getEntityData();
 });
 
 // 生成时间选项，并在今天时禁用未来时间
@@ -373,6 +376,9 @@ function handleDateTimeSelection() {
                 const pTag = activeSpan.querySelector('p');
                 pTag.innerHTML = formattedTime;
                 pTag.classList.add('p-text-show');
+
+                // 由于时间选择变化，需要重新请求单体数据
+                getEntityData();
 
                 // 在图层切换后绘制单体轮廓
                 if (getActiveButton() == TOOLBAR_STATUS.TRACK) {
