@@ -63,8 +63,8 @@ function changeRadarLayer(imageUrl) {
 }
 
 // 请求时间默认为 202411201200（北京时间）
-let realTimeStr = "202411201200";
-let utcRealTime = "2024-11-20 04:00";
+let realTimeStr = null;
+let utcRealTime = null;
 
 function changeMaps() {
     return new Promise((resolve, reject) => {
@@ -85,11 +85,20 @@ function changeMaps() {
             const tokenValue = activeCard.getAttribute('token');
             const spanValue = activeSpan.getAttribute('data-index');
 
+            currentToken = tokenValue;
+            if(lastToken != tokenValue) {
+                createLegend(tokenValue);
+            }
+
             // 计算时间参数
             const timeOffset = current_spans_index - (menuItem_SPANS_ACTUAL_VALUE_NUMBER - 1);
             console.log("timeOffset:", timeOffset);
             console.log("current_spans_index:", current_spans_index);
 
+            if(!realTimeStr) {
+                console.log("realTimeStr is null, cannot convert to UTC time.");
+                return;
+            }   
             const year = parseInt(realTimeStr.substring(0, 4));
             const month = parseInt(realTimeStr.substring(4, 6));
             const day = parseInt(realTimeStr.substring(6, 8));
@@ -107,17 +116,12 @@ function changeMaps() {
             const formattedRequestTime = requestTime.toISOString().slice(0, 16).replace(/[-:T ]/g, '');
             const datePart = formattedRequestTime.substring(0, 8);
 
-            currentToken = tokenValue;
             console.log('当前已点击新的菜单：', tokenValue,
                 '\n时间间隔为：', menuItem_INTERVAL,
                 '\n真实值滑块数量：', menuItem_SPANS_ACTUAL_VALUE_NUMBER,
                 '\n滑块总数：', menuItem_SPANS_NUMBER,
                 '\n播放滑块id:', spanValue,
                 '\n由此计算的请求时间为：', formattedRequestTime);
-            
-            if(lastToken != tokenValue) {
-                createLegend(tokenValue);
-            }
 
             const preUrl = "http://localhost:8080";
             if(tokenValue == "RADAR") {

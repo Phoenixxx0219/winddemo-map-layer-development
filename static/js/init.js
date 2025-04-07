@@ -67,6 +67,7 @@ function initDataMenu() {
                 this.classList.add('card-d--animate');
                 CardItemActive = this;
                 initSpans();// 点击的时候sub-menu要刷新
+                updateTimeOptions();  // 更新时间选择器，根据当前卡片 token 的值调整时间间隔
             }
         });
     }
@@ -325,9 +326,16 @@ function updateTimeOptions() {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
+    // 获取当前激活卡片的 token 类型
+    const activeCard = document.querySelector('.card-d--active'); 
+    const tokenValue = activeCard ? activeCard.getAttribute('token') : 'RADAR'; // 默认用 RADAR
+
+    // 设置分钟步长
+    const step = tokenValue === 'SATELLITE' ? 15 : 6;
+
     let optionsHTML = "";
     for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 6) {
+        for (let minute = 0; minute < 60; minute += step) {
             const hourStr = hour < 10 ? '0' + hour : hour;
             const minuteStr = minute < 10 ? '0' + minute : minute;
             const timeValue = `${hourStr}:${minuteStr}`;
