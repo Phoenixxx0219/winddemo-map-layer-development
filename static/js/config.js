@@ -47,6 +47,15 @@ const RADAR_CONFIG = {
     opacity: 0.6
 };
 
+// 卫星图像
+const SATELLITE_CONFIG = {
+    bounds: [
+        [5.04528284072876, 136.96437072753906], // 左下角 (down, left)
+        [53.0, 72.0]  // 右上角 (up, right)
+    ],
+    opacity: 1
+};
+
 // 图例
 const LEGEND = {
     RADAR: [
