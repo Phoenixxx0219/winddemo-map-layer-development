@@ -421,30 +421,51 @@ function queryPointInfo(lat, lng, marker) {
     console.log(`开始查询点信息：纬度=${lat}, 经度=${lng}`);
 
     // 模拟查询数据，这里可以换成实际的 AJAX 请求
-    // 模拟数据：查询信息为字符串
-    const queryResult = `查询坐标：${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    let queryResult = null;
 
-    // 绑定 popup 到 marker，并打开
-    marker.bindPopup(queryResult).openPopup();
+    if(currentToken == "RADAR" ) {
+        // 构造请求参数
+        const requestData = {
+            time: utcRealTime,
+            algorithm: "forcast",
+            interval: "6",
+            lat: lat,
+            lon: lng
+        };
 
-    // 如果需要通过 AJAX 获取数据，可以如下：
-    /*
-    fetch(`./data/query.json?lat=${lat}&lon=${lng}`)
+        fetch("http://localhost:8080/api/convective/point", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        })
         .then(response => response.json())
-        .then(data => {
-            let info;
-            if (data && data.info) {
-                info = `查询成功！\n信息：${data.info}`;
+        .then(result => {
+            if (result.code === 200) {
+                pointData = result.data;
+                if (!pointData) {
+                    queryResult = `查询坐标：${lat.toFixed(4)}, ${lng.toFixed(4)}<br>此位置在未来3小时内不会受到强对流影响`;
+                    marker.bindPopup(queryResult).openPopup();
+                    console.log("查询结果为空");
+                    return;
+                }
+                queryResult = `查询坐标：${lat.toFixed(4)}, ${lng.toFixed(4)}<br>单体编号：${pointData.id}<br>预警时间：${pointData.time}`;
+                // 绑定 popup 到 marker，并打开
+                marker.bindPopup(queryResult).openPopup();
+                console.log("获取数据成功:", pointData);
             } else {
-                info = "未找到相关信息。";
+                console.error("请求错误:", result.message);
             }
-            marker.bindPopup(info).openPopup();
         })
         .catch(error => {
-            console.error("查询失败：", error);
-            marker.bindPopup("查询失败，请检查网络或数据。").openPopup();
+            console.error("请求异常:", error);
         });
-    */
+    }else {
+        queryResult = `查询坐标：${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        // 绑定 popup 到 marker，并打开
+        marker.bindPopup(queryResult).openPopup();
+    }
 }
 
 
