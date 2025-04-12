@@ -237,8 +237,8 @@ const MENUS = [
     {
         "NAME": "卫星云图", // NAME用于前端展示
         "TOKEN": "SATELLITE", // TOKEN用于数据请求
-        "IMAGE_URL": "./static/img/meteorology/降雨.jpg",
-        "ICON_URL": "./static/img/icon/降雨.svg",
+        "IMAGE_URL": "./static/img/meteorology/clouds.jpg",
+        "ICON_URL": "./static/img/icon/卫星.svg",
         "INTERVAL": 15, // 卫星6分钟一次
         "SPANS_NUMBER": 4 + 12, // 往前推2小时，往后推3小时，这样可以直接避免大概1小时延迟
         "SPANS_ACTUAL_VALUE_NUMBER": 4

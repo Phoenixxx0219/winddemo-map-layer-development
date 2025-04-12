@@ -151,7 +151,7 @@ function changeMaps() {
                 '\n播放滑块id:', spanValue,
                 '\n由此计算的请求时间为：', realTimeStr);
 
-            const preUrl = "http://localhost:8080";
+            const preUrl = "http://10.250.105.96:8080";
             if(tokenValue == "RADAR") {
                 // 构造雷达图像路径
                 if(spanValue < menuItem_SPANS_ACTUAL_VALUE_NUMBER) {
@@ -246,7 +246,7 @@ function getEntityData() {
             interval: "6"
         };
 
-        fetch("http://localhost:8080/api/convective/tracking", {
+        fetch("http://10.250.105.96:8080/api/convective/tracking", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -433,7 +433,7 @@ function queryPointInfo(lat, lng, marker) {
             lon: lng
         };
 
-        fetch("http://localhost:8080/api/convective/point", {
+        fetch("http://10.250.105.96:8080/api/convective/point", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
