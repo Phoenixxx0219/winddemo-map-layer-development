@@ -2,13 +2,6 @@
 const colors = {
     transparentLight: 'rgba(255, 255, 255, 0.36)',
     transparentDark: 'rgba(0, 0, 0, 0.36)',
-    // // 绿色配色
-    // default: 'rgba(0, 102, 51, 0.8)',
-    // // 深蓝色配色
-    // default: 'rgba(60, 111, 182, 0.8)',
-    // // 淡蓝色配色
-    // default: 'rgba(44, 79, 207, 1)',
-    // 毛玻璃配色
     default: 'rgba(30, 86, 163, 1)',
     accent: 'rgba(224, 62, 54, 1)',
     accentTransparentDark: 'rgba(224, 62, 54, 0.72)',
@@ -244,10 +237,3 @@ const MENUS = [
         "SPANS_ACTUAL_VALUE_NUMBER": 4
     }
 ]
-
-
-
-
-
-
-

@@ -412,30 +412,3 @@ function handleDateTimeSelection() {
         alert("请选择有效的日期和时间！");
     }
 }
-
-
-/*******************************
- * info:        左侧菜单的隐藏与显示事件
- *******************************/
-// let isFullScreen = false;
-
-// document.getElementById('full-screen-button').addEventListener('click', function () {
-//     var leftMenu = document.getElementById('left-menu');
-//     var fullScreenButton = document.getElementById('full-screen-button');
-//     var fullScreenButtonImg = document.getElementById('full-screen-button_img');
-//     var cards = document.querySelectorAll('.card-d');
-//     leftMenu.classList.toggle('hidden'); // 切换hidden类
-//     fullScreenButton.classList.toggle('hidden');
-//     fullScreenButtonImg.classList.toggle('hidden');
-//     // 切换isFullScreen状态
-//     isFullScreen = !isFullScreen;
-//     // 根据状态更改图片src
-//     if (isFullScreen) {
-//         fullScreenButtonImg.src = './static/img/icon/unfullscreen.svg';
-//     } else {
-//         fullScreenButtonImg.src = './static/img/icon/fullscreen.svg';
-//     }
-//     cards.forEach(function (card) {
-//         card.classList.toggle('hidden');
-//     });
-// });

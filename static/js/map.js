@@ -509,29 +509,3 @@ function convertTimetoStr(dateTimeStr) {
     const minutes = String(dateTime.getMinutes()).padStart(2, '0');
     return `${year}${month}${day}${hours}${minutes}`;
 }
-
-
-// 北京时间转换UTC为时间
-// function convertBeijingToUTCTime(beijingTimeString) {
-//     const bejingDate = new Date(beijingTimeString);
-//     const utcTime = new Date(bejingDate.getTime() - 8 * 60 * 60 * 1000);
-//     const year = utcTime.getFullYear();
-//     const month = String(utcTime.getMonth() + 1).padStart(2, '0');
-//     const day = String(utcTime.getDate()).padStart(2, '0');
-//     const hours = String(utcTime.getHours()).padStart(2, '0');
-//     const minutes = String(utcTime.getMinutes()).padStart(2, '0');
-//     return `${year}${month}${day}${hours}${minutes}`;
-// }
-
-
-// // UTC时间转换为北京时间
-// function convertUTCToBeijingTime(utcTimeString) {
-//     const utcDate = new Date(utcTimeString);
-//     const selectBeijingTime = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-//     const year = selectBeijingTime.getFullYear();
-//     const month = String(selectBeijingTime.getMonth() + 1).padStart(2, '0');
-//     const day = String(selectBeijingTime.getDate()).padStart(2, '0');
-//     const hours = String(selectBeijingTime.getHours()).padStart(2, '0');
-//     const minutes = String(selectBeijingTime.getMinutes()).padStart(2, '0');
-//     return `${year}-${month}-${day} ${hours}:${minutes}`;
-// }
